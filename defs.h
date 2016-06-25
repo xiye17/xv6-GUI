@@ -8,6 +8,14 @@ struct rtcdate;
 struct spinlock;
 struct stat;
 struct superblock;
+struct RGB;
+struct RGBA;
+
+// gui.c
+void            initGUI(void);
+int             drawCharacter(struct RGB*, int, int, char, struct RGBA);
+void            drawString(struct RGB*, int, int, char *, struct RGBA);
+void            sayHello();
 
 // bio.c
 void            binit(void);
