@@ -17,7 +17,6 @@ extern char end[]; // first address after kernel loaded from ELF file
 int
 main(void)
 {
-  initGUI();
   kinit1(end, P2V(4*1024*1024)); // phys page allocator
   kvmalloc();      // kernel page table
   mpinit();        // collect info about this machine
@@ -33,6 +32,8 @@ main(void)
   binit();         // buffer cache
   fileinit();      // file table
   ideinit();       // disk
+  initGUI();
+  sayHello();
   mouseinit();
   if(!ismp)
     timerinit();   // uniprocessor timer
