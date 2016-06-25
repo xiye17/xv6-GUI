@@ -32,6 +32,7 @@ main(void)
   binit();         // buffer cache
   fileinit();      // file table
   ideinit();       // disk
+  mouseinit();
   if(!ismp)
     timerinit();   // uniprocessor timer
   startothers();   // start other processors
