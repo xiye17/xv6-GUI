@@ -21,7 +21,7 @@
 //
 // The log is a physical re-do log containing disk blocks.
 // The on-disk log format:
-//   header block, containing block #s for block A, B, C, ...
+//   header block, containing sector #s for block A, B, C, ...
 //   block A
 //   block B
 //   block C
@@ -29,10 +29,10 @@
 // Log appends are synchronous.
 
 // Contents of the header block, used for both the on-disk header block
-// and to keep track in memory of logged block# before commit.
+// and to keep track in memory of logged sector #s before commit.
 struct logheader {
   int n;   
-  int block[LOGSIZE];
+  int sector[LOGSIZE];
 };
 
 struct log {
@@ -50,17 +50,17 @@ static void recover_from_log(void);
 static void commit();
 
 void
-initlog(int dev)
+initlog(void)
 {
   if (sizeof(struct logheader) >= BSIZE)
     panic("initlog: too big logheader");
 
   struct superblock sb;
   initlock(&log.lock, "log");
-  readsb(dev, &sb);
-  log.start = sb.logstart;
+  readsb(ROOTDEV, &sb);
+  log.start = sb.size - sb.nlog;
   log.size = sb.nlog;
-  log.dev = dev;
+  log.dev = ROOTDEV;
   recover_from_log();
 }
 
@@ -72,7 +72,7 @@ install_trans(void)
 
   for (tail = 0; tail < log.lh.n; tail++) {
     struct buf *lbuf = bread(log.dev, log.start+tail+1); // read log block
-    struct buf *dbuf = bread(log.dev, log.lh.block[tail]); // read dst
+    struct buf *dbuf = bread(log.dev, log.lh.sector[tail]); // read dst
     memmove(dbuf->data, lbuf->data, BSIZE);  // copy block to dst
     bwrite(dbuf);  // write dst to disk
     brelse(lbuf); 
@@ -89,7 +89,7 @@ read_head(void)
   int i;
   log.lh.n = lh->n;
   for (i = 0; i < log.lh.n; i++) {
-    log.lh.block[i] = lh->block[i];
+    log.lh.sector[i] = lh->sector[i];
   }
   brelse(buf);
 }
@@ -105,7 +105,7 @@ write_head(void)
   int i;
   hb->n = log.lh.n;
   for (i = 0; i < log.lh.n; i++) {
-    hb->block[i] = log.lh.block[i];
+    hb->sector[i] = log.lh.sector[i];
   }
   bwrite(buf);
   brelse(buf);
@@ -178,7 +178,7 @@ write_log(void)
 
   for (tail = 0; tail < log.lh.n; tail++) {
     struct buf *to = bread(log.dev, log.start+tail+1); // log block
-    struct buf *from = bread(log.dev, log.lh.block[tail]); // cache block
+    struct buf *from = bread(log.dev, log.lh.sector[tail]); // cache block
     memmove(to->data, from->data, BSIZE);
     bwrite(to);  // write the log
     brelse(from); 
@@ -217,15 +217,13 @@ log_write(struct buf *b)
   if (log.outstanding < 1)
     panic("log_write outside of trans");
 
-  acquire(&log.lock);
   for (i = 0; i < log.lh.n; i++) {
-    if (log.lh.block[i] == b->blockno)   // log absorbtion
+    if (log.lh.sector[i] == b->sector)   // log absorbtion
       break;
   }
-  log.lh.block[i] = b->blockno;
+  log.lh.sector[i] = b->sector;
   if (i == log.lh.n)
     log.lh.n++;
   b->flags |= B_DIRTY; // prevent eviction
-  release(&log.lock);
 }
 
