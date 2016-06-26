@@ -9,6 +9,7 @@
 #include "gui_base.h"
 #include "character.h"
 #include "bitmap.h"
+#include "mouse_shape.h"
 
 struct spinlock gui_lock;
 
@@ -23,15 +24,21 @@ void initGUI() {
     screen_buf2 = (RGB*)(baseAdd + screen_size * 2);
     initlock(&gui_lock, "gui");
 
-    uint x,y;
-    uchar *b = (uchar *)screen;
-    for (x=0;x<SCREEN_WIDTH;x++)
-        for (y=0;y<SCREEN_HEIGHT;y++)
-        {
-            b[0]=0xFF;
-            b[1]=0x00;
-            b[2]=0x00;
-            b+=3;
+    mouse_color[0].G = 0;
+    mouse_color[0].B = 0;
+    mouse_color[0].R = 0;
+    mouse_color[1].G = 200;
+    mouse_color[1].B = 200;
+    mouse_color[1].R = 200;
+
+    uint x, y;
+    uchar *b = (uchar *) screen;
+    for (x = 0; x < SCREEN_WIDTH; x++)
+        for (y = 0; y < SCREEN_HEIGHT; y++) {
+            b[0] = 0xFF;
+            b[1] = 0x00;
+            b[2] = 0x00;
+            b += 3;
         }
 
     cprintf("@Screen Width:   %d\n", SCREEN_WIDTH);
@@ -130,6 +137,26 @@ void draw24Image(RGB *buf, RGB *img, int x, int y, int width, int height) {
     }
 }
 
+void drawMouse(RGB *buf, int mode, int x, int y) {
+    int i, j;
+    RGB *t;
+    for (i = 0; i < MOUSE_HEIGHT; i++) {
+        if (y + i > SCREEN_HEIGHT || y + i < 0) {
+            break;
+        }
+        for (j = 0; j < MOUSE_WIDTH; j++) {
+            if (x + j > SCREEN_WIDTH || x + j < 0) {
+                break;
+            }
+            uchar temp = mouse_pointer[mode][i][j];
+            if (temp) {
+                t = buf + (y + i) * SCREEN_WIDTH + x + j;
+                drawPoint(t, mouse_color[temp - 1]);
+            }
+        }
+    }
+}
+
 void sys_hello() {
     RGB *image;
     int i;
@@ -144,4 +171,6 @@ void sys_hello() {
     color.G = 255;
     draw24Image(screen, image, 0, 0, w, h);
     drawString(screen, 100, 200, "Hello World!", color);
+    drawMouse(screen, 0, 100, 100);
+    drawMouse(screen, 1, 100, 120);
 }
