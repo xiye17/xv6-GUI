@@ -33,7 +33,6 @@ main(void)
   fileinit();      // file table
   ideinit();       // disk
   initGUI();
-  sayHello();
   mouseinit();
   if(!ismp)
     timerinit();   // uniprocessor timer
