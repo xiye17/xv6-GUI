@@ -10,6 +10,10 @@ struct stat;
 struct superblock;
 struct RGB;
 struct RGBA;
+struct message;
+
+// gui_kernal.c
+void            guiKernelHandleMsg(struct message *);
 
 // gui.c
 void            initGUI(void);

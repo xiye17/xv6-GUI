@@ -1,24 +1,24 @@
 
 #define MAX_MSG_COUNT 50;
 
-struct Rect {
+typeded struct Rect {
     int x;
     int y;
     int height;
     int width;
-}
+} Rect;
 
-struct msgQuene {
+typedf struct MsgQuene {
     int head;
     int tail;
     int length;
-    msg msgList[MAX_MSG_COUNT];
-}
+    Message msgList[MAX_MSG_COUNT];
+} MsgQuene;
 
-struct wndInfo {
+typedef struct WndInfo {
     int hwnd;
     Rect wndTitleBar;
     Rect wndContent;
     proc * procPtr;
-    msgQuene * msgQ;
-}
+    MsgQuene * msgQ;
+} WndInfo;
