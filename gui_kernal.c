@@ -3,8 +3,8 @@
 #include "param.h"
 #include "defs.h"
 #include "msg.h"
-
-//#define MAX_WINDOW_COUNT 50;
+#include "xv6_api.h"
+#include "gui_base.h"
 
 //struct wndInfo wndInfoList[MAX_WINDOW_COUNT];
 
@@ -49,6 +49,28 @@ guiKernelHandleMsg(message *msg)
     {
         cprintf("MOUSE DC: btn=%x\n", msg->params[0]);
     }
+}
+
+
+int sys_createwindow(void)
+{
+    int x, y, cx, cy;
+    char * title;
+    argint(0, &x);
+    argint(1, &y);
+    argint(2, &cx);
+    argint(3, &cy);
+    argstr(4, &title);
+    cprintf("%s", title);
+    /*RGBA color;*/
+    /*color.A = 255;*/
+    /*color.R = 255;*/
+    /*color.G = 0;*/
+    /*color.B = 0;*/
+    /*drawString(screen, 100, 200, "Hello World!", color);*/
+    /*drawMouse(screen, 0, 100, 100);*/
+    /*drawMouse(screen, 1, 100, 120);*/
+    return 0;
 }
 
 /*void dispatchMessage(msg *, wndInfo *)*/

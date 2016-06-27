@@ -11,7 +11,13 @@
 #include "bitmap.h"
 #include "mouse_shape.h"
 
+/*ushort SCREEN_WIDTH;*/
+/*ushort SCREEN_HEIGHT;*/
+/*int screen_size;*/
 struct spinlock gui_lock;
+RGB *screen = 0;
+RGB *screen_buf1 = 0;
+RGB *screen_buf2 = 0;
 
 void initGUI() {
     uint GraphicMem = KERNBASE + 0x1028;

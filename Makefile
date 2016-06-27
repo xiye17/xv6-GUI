@@ -138,7 +138,7 @@ tags: $(OBJS) entryother.S _init
 vectors.S: vectors.pl
 	perl vectors.pl > vectors.S
 
-ULIB = ulib.o usys.o printf.o umalloc.o bitmap.o
+ULIB = ulib.o usys.o printf.o umalloc.o bitmap.o xv6_api.o
 
 _%: %.o $(ULIB)
 	$(LD) $(LDFLAGS) -N -e main -Ttext 0 -o $@ $^
@@ -176,6 +176,7 @@ UPROGS=\
 	_usertests\
 	_wc\
 	_zombie\
+	_desktop\
 
 fs.img: mkfs README desktop.bmp $(UPROGS)
 	./mkfs fs.img README desktop.bmp $(UPROGS)

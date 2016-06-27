@@ -1,3 +1,6 @@
+#ifndef GUI_BASE_H
+#define GUI_BASE_H
+
 #define GUI_BUF 0x9000
 
 #ifndef __ASSEMBLER__
@@ -15,14 +18,11 @@ typedef struct RGB {
 
 // 32 bit RGBA. used above GUI Utility
 typedef struct RGBA {
+    unsigned char A;
     unsigned char B;
     unsigned char G;
     unsigned char R;
-    unsigned char A;
 } RGBA;
 
-RGB *screen = 0;
-RGB *screen_buf1 = 0;
-RGB *screen_buf2 = 0;
-
+#endif
 #endif

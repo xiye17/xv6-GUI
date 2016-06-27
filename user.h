@@ -2,6 +2,7 @@ struct stat;
 struct rtcdate;
 struct RGBA;
 struct RGB;
+struct Window;
 
 // system calls
 int fork(void);
@@ -27,6 +28,9 @@ int sleep(int);
 int uptime(void);
 void hello(struct RGB *, int, int);
 
+// system calls for gui
+int createwindow(int, int, int, int, char *);
+
 // ulib.c
 int stat(char*, struct stat*);
 char* strcpy(char*, char*);
@@ -44,3 +48,6 @@ int atoi(const char*);
 // bitmap.c
 int readBitmapFile(char *, struct RGBA *, int *, int *);
 int read24BitmapFile(char *, struct RGB *, int *, int *);
+
+// xv6_api.c
+int api_createwindow(struct Window *);

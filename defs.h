@@ -16,6 +16,8 @@ struct message;
 void            guiKernelHandleMsg(struct message *);
 
 // gui.c
+extern  struct RGB* screen;
+void  drawMouse(struct RGB *buf, int mode, int x, int y);
 void            initGUI(void);
 int             drawCharacter(struct RGB*, int, int, char, struct RGBA);
 void            drawString(struct RGB*, int, int, char *, struct RGBA);

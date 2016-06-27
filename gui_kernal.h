@@ -1,12 +1,9 @@
+#ifndef __ASSEMBLER__
 
 #define MAX_MSG_COUNT 50;
-
-typeded struct Rect {
-    int x;
-    int y;
-    int height;
-    int width;
-} Rect;
+struct Rect;
+struct Point;
+struct Size;
 
 typedf struct MsgQuene {
     int head;
@@ -22,3 +19,5 @@ typedef struct WndInfo {
     proc * procPtr;
     MsgQuene * msgQ;
 } WndInfo;
+
+#endif
