@@ -31,6 +31,7 @@ main(void)
   tvinit();        // trap vectors
   binit();         // buffer cache
   fileinit();      // file table
+  iinit();
   ideinit();       // disk
   initGUI();
   initGUIKernel();

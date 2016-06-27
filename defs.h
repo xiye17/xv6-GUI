@@ -22,6 +22,8 @@ void  drawMouse(struct RGB *buf, int mode, int x, int y);
 void            initGUI(void);
 int             drawCharacter(struct RGB*, int, int, char, struct RGBA);
 void            drawString(struct RGB*, int, int, char *, struct RGBA);
+void            draw24Image(struct RGB *, struct RGB *, int , int , int , int);
+void            drawRGBContentToContent(struct RGB *, struct RGB *, int , int , int , int);
 
 // bio.c
 void            binit(void);

@@ -129,20 +129,46 @@ void drawImage(RGB *buf, RGBA *img, int x, int y, int width, int height) {
 }
 
 void draw24Image(RGB *buf, RGB *img, int x, int y, int width, int height) {
-    int i;
-    RGB *t;
-    RGB *o;
-    int max_line = (SCREEN_WIDTH - x) < width ? (SCREEN_WIDTH - x) : width;
-    for (i = 0; i < height; i++) {
-        if (y + i > SCREEN_HEIGHT || y + i < 0) {
-            break;
-        }
-        t = buf + (y + i) * SCREEN_WIDTH + x;
-        o = img + (height - i) * width;
-        memmove(t, o, max_line * 3);
+    /*int i;*/
+    /*RGB *t;*/
+    /*RGB *o;*/
+    /*int max_line = (SCREEN_WIDTH - x) < width ? (SCREEN_WIDTH - x) : width;*/
+    /*for (i = 0; i < height; i++) {*/
+        /*if (y + i > SCREEN_HEIGHT || y + i < 0) {*/
+            /*break;*/
+        /*}*/
+        /*t = buf + (y + i) * SCREEN_WIDTH + x;*/
+        /*o = img + (height - i) * width;*/
+        /*cprintf("%d %d\n", t, o);*/
+        /*memmove(t, o, max_line * 3);*/
+    /*}*/
+
+    int i, j;
+    RGB *t , *o;
+    for (i = 0; i < height; ++i)
+    {
+         for (j = 0; j < width; ++j)
+         {
+            t = buf + (y + i) * SCREEN_WIDTH + x + j;
+            o = img + (height -i - 1) * width +j;
+            drawPoint(t, *o);
+         }
     }
 }
 
+void drawRGBContentToContent(RGB *buf, RGB *img, int x, int y, int width, int height) {
+    int i, j;
+    RGB *t , *o;
+    for (i = 0; i < height; ++i)
+    {
+         for (j = 0; j < width; ++j)
+         {
+            t = buf + (y + i) * SCREEN_WIDTH + x + j;
+            o = img + i * width +j;
+            drawPoint(t, *o);
+         }
+    }
+}
 void drawMouse(RGB *buf, int mode, int x, int y) {
     int i, j;
     RGB *t;

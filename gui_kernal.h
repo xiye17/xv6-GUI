@@ -19,8 +19,9 @@ typedef struct MsgQueue {
 typedef struct WndInfo {
     int hwnd;
     Rect wndTitleBar;
-    Rect wndContent;
+    Rect wndBody;
     struct proc * procPtr;
+    struct RGB * content;
     MsgQueue msgQ;
 } WndInfo;
 

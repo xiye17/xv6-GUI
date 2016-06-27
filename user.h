@@ -3,6 +3,8 @@ struct rtcdate;
 struct RGBA;
 struct RGB;
 struct Window;
+struct Point;
+struct Size;
 
 // system calls
 int fork(void);
@@ -29,7 +31,8 @@ int uptime(void);
 void hello(struct RGB *, int, int);
 
 // system calls for gui
-int createwindow(int, int, int, int, char *);
+int createwindow(int, int, int, int, char *, struct RGB*);
+int repaintwindow(int);
 
 // ulib.c
 int stat(char*, struct stat*);
@@ -51,3 +54,6 @@ int read24BitmapFile(char *, struct RGB *, int *, int *);
 
 // xv6_api.c
 int api_createwindow(struct Window *);
+int api_paint24Bitmap(struct Window *, struct RGB* img,
+        struct Point p, struct Size s);
+int api_repaint(struct Window *);

@@ -54,12 +54,19 @@ int sys_createwindow(void)
 {
     int x, y, cx, cy;
     char * title;
+    struct RGB * content;
     argint(0, &x);
     argint(1, &y);
     argint(2, &cx);
     argint(3, &cy);
     argstr(4, &title);
-    cprintf("%s", title);
+    cprintf("%d %d %d %d\n", x, y, cx, cy);
+//    argptr(5, (char**)(&content), sizeof(RGB));
+
+    int p;
+    argint(5, &p);
+    content = (RGB *) p;
+    cprintf("Ptr exam %d\n", content);
     /*RGBA color;*/
     /*color.A = 255;*/
     /*color.R = 255;*/
@@ -78,13 +85,43 @@ int sys_createwindow(void)
         {
             wndInfoList[i].hwnd = i;
             setRect(&wndInfoList[i].wndTitleBar, x, y - 20, cx, 20);
-            setRect(&wndInfoList[i].wndContent,x, y, cx, cy);
+            setRect(&wndInfoList[i].wndBody,x, y, cx, cy);
             wndInfoList[i].procPtr = proc;
+            wndInfoList[i].content = content;
             initMsgQueue(&wndInfoList[i].msgQ);
        }
     }
     release(&guiKernelLock);
     return 0;
+}
+
+int testXXX(RGB * p)
+{
+    cprintf("%d %d %d", p->R, p->G, p->B);
+    cprintf("asdasda");
+    return 0;
+}
+
+int sys_repaintwindow()
+{
+    int hwnd;
+    argint(0, &hwnd);
+
+    cprintf("%d\n", wndInfoList[hwnd].procPtr);
+    cprintf("Draw check %d\n",wndInfoList[hwnd].content);
+    RGB* p = wndInfoList[hwnd].content;
+    testXXX(p);
+    drawRGBContentToContent(screen, p,0, 0, 800, 600);
+    //if (proc == 0)
+//		switchkvm();
+//	else
+//		switchuvm(proc);
+
+
+    // drawString(screen, 100, 200, "Hello World!", color);
+    /*drawMouse(screen, 0, 100, 100);*/
+    /*drawMouse(screen, 1, 100, 120);*/
+   return 0;
 }
 
 /*void dispatchMessage(msg *, wndInfo *)*/

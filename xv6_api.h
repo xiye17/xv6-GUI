@@ -29,7 +29,7 @@ typedef struct Size {
 } Size;
 
 typedef struct Window {
-    int hWnd;
+    int hwnd;
     Point pos;
     Size size;
     char* title;

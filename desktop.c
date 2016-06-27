@@ -18,12 +18,19 @@ main(void)
     wnd.size.h = USCREEN_HEIGHT;
     wnd.title = "window1";
 
-    int hwnd = api_createwindow(&wnd);
-    /*char filename[] = "desktop.bmp";*/
-    /*RGB * background;*/
-    /*int h, w;*/
-    /*read24BitmapFile(filename, background, &h, &w);*/
-    hwnd = 1;
-    while(hwnd);
+    RGB * background = malloc(800 * 600 * 3);
+    api_createwindow(&wnd);
+    char filename[] = "desktop.bmp";
+    int h, w;
+    read24BitmapFile(filename, background, &h, &w);
+
+
+    Point pDraw = {0, 0};
+    Size sDraw = {600, 800};
+    api_paint24Bitmap( &wnd, background, pDraw, sDraw);
+
+    api_repaint(&wnd);
+    printf(1, "safe here\n");
+    while(1 >= 0);
     return 0;
 }
