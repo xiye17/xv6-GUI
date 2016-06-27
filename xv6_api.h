@@ -14,8 +14,8 @@ struct Size;
 typedef struct Rect {
     int x;
     int y;
-    int height;
-    int width;
+    int h;
+    int w;
 } Rect;
 
 typedef struct Point {

@@ -4,53 +4,51 @@
 #include "defs.h"
 #include "msg.h"
 #include "xv6_api.h"
+#include "spinlock.h"
 #include "gui_base.h"
-
+#include "gui_kernal.h"
+#include "mmu.h"
+#include "proc.h"
 //struct wndInfo wndInfoList[MAX_WINDOW_COUNT];
 
-/*void*/
-/*gui_kernal_init()*/
-/*{*/
+struct Focus focus = {0, 0, 0};
+struct MousePos mousePos = {0, 0};
+struct WndInfo wndInfoList[MAX_WINDOW_COUNT];
+int wndCount = 0;
+struct spinlock guiKernelLock;
 
-/*}*/
+void  initMsgQueue(MsgQueue * msgQ)
+{
+    msgQ->head = 0;
+    msgQ->tail = 0;
+    msgQ->length = 0;
+    memset(msgQ->msgList, 0, MAX_MSG_COUNT * sizeof(message));
+}
+
+void
+initGUIKernel()
+{
+    cprintf("guiKernelInit\n");
+    int i;
+    for(i = 0; i < MAX_WINDOW_COUNT; ++i)
+        wndInfoList[i].hwnd = -1;
+    initlock(&guiKernelLock, "guiKernel");
+}
 
 void
 guiKernelHandleMsg(message *msg)
 {
-    if (msg->msg_type == M_KEY_UP)
-    {
-        cprintf("KEY UP: %x, %x\n", msg->params[0], msg->params[1]);
-    }
-    else if (msg->msg_type == M_KEY_DOWN)
-    {
-        cprintf("KEY DOWN: %x, %x\n", msg->params[0], msg->params[1]);
-    }
-    else if (msg->msg_type == M_MOUSE_MOVE)
-    {
-        cprintf("MOUSE MOVE: dx=%d, dy=%d, btn=%x\n", msg->params[0], msg->params[1], msg->params[2]);
-    }
-    else if (msg->msg_type == M_MOUSE_DOWN)
-    {
-        cprintf("MOUSE DOWN: btn=%x\n", msg->params[0]);
-    }
-    else if (msg->msg_type == M_MOUSE_UP)
-    {
-        cprintf("MOUSE UP: btn=%x\n", msg->params[0]);
-    }
-    else if (msg->msg_type == M_MOUSE_LEFT_CLICK)
-    {
-        cprintf("MOUSE LC: btn=%x\n", msg->params[0]);
-    }
-    else if (msg->msg_type == M_MOUSE_RIGHT_CLICK)
-    {
-        cprintf("MOUSE RC: btn=%x\n", msg->params[0]);
-    }
-    else if (msg->msg_type == M_MOUSE_DBCLICK)
-    {
-        cprintf("MOUSE DC: btn=%x\n", msg->params[0]);
-    }
+
 }
 
+
+void setRect(struct Rect *rect, int x, int y, int h, int w)
+{
+    rect->x = x;
+    rect->y = y;
+    rect->h = h;
+    rect->w = w;
+}
 
 int sys_createwindow(void)
 {
@@ -70,6 +68,22 @@ int sys_createwindow(void)
     /*drawString(screen, 100, 200, "Hello World!", color);*/
     /*drawMouse(screen, 0, 100, 100);*/
     /*drawMouse(screen, 1, 100, 120);*/
+
+    acquire(&guiKernelLock);
+    //Add to the wndList
+    int i;
+    for (i = 0; i < MAX_WINDOW_COUNT; ++i)
+    {
+        if(wndInfoList[i].hwnd == -1)
+        {
+            wndInfoList[i].hwnd = i;
+            setRect(&wndInfoList[i].wndTitleBar, x, y - 20, cx, 20);
+            setRect(&wndInfoList[i].wndContent,x, y, cx, cy);
+            wndInfoList[i].procPtr = proc;
+            initMsgQueue(&wndInfoList[i].msgQ);
+       }
+    }
+    release(&guiKernelLock);
     return 0;
 }
 

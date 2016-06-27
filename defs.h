@@ -14,6 +14,7 @@ struct message;
 
 // gui_kernal.c
 void            guiKernelHandleMsg(struct message *);
+void            initGUIKernel(void);
 
 // gui.c
 extern  struct RGB* screen;
