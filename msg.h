@@ -16,6 +16,9 @@
 #define M_MOUSE_MOVE 3
 #define M_MOUSE_DOWN 4
 #define M_MOUSE_UP 5
+#define M_MOUSE_LEFT_CLICK 6
+#define M_MOUSE_RIGHT_CLICK 7
+#define M_MOUSE_DBCLICK 8
 
 typedef struct message {
     int msg_type;

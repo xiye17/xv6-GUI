@@ -28,5 +28,17 @@ int handleMessage(message* msg)
     {
         cprintf("MOUSE UP: btn=%x\n", msg->params[0]);
     }
+    else if (msg->msg_type == M_MOUSE_LEFT_CLICK)
+    {
+        cprintf("MOUSE LC: btn=%x\n", msg->params[0]);
+    }
+    else if (msg->msg_type == M_MOUSE_RIGHT_CLICK)
+    {
+        cprintf("MOUSE RC: btn=%x\n", msg->params[0]);
+    }
+    else if (msg->msg_type == M_MOUSE_DBCLICK)
+    {
+        cprintf("MOUSE DC: btn=%x\n", msg->params[0]);
+    }
     return 0;
 }

@@ -1,8 +1,3 @@
-//
-// Created by TianYi Zhuang on 6/25/16.
-//
-
-
 #include "types.h"
 #include "x86.h"
 #include "defs.h"
@@ -12,10 +7,14 @@
 
 static struct spinlock mouselock;
 static struct {
-    int x_sgn, y_sgn, x_mov, y_mov;
-    int l_btn, r_btn, m_btn;
+  int x_sgn, y_sgn, x_mov, y_mov;
+  int l_btn, r_btn, m_btn;
+  int x_overflow, y_overflow;
+  uint tick;
 } packet;
 static int count;
+static int recovery;
+static int lastbtn, lastdowntick, lastclicktick;
 
 void
 mouse_wait(uchar type)
@@ -35,7 +34,7 @@ mouse_wait(uchar type)
         {
             if((inb(0x64) & 2) == 0)
                 return;
-        }
+        }   
     }
 }
 
@@ -62,8 +61,8 @@ mouseinit(void)
 
     mouse_wait(1);
     outb(0x64, 0xa8);		//激活鼠标接口
-
-    mouse_wait(1);		    //激活中断
+    
+    mouse_wait(1);		//激活中断
     outb(0x64, 0x20);
     mouse_wait(0);
     statustemp = (inb(0x60) | 2);
@@ -79,76 +78,135 @@ mouseinit(void)
     mouse_read();
     mouse_write(10);
     mouse_read();
-
+ 
     mouse_write(0xf4);
-    mouse_read();
+    mouse_read();    
 
     initlock(&mouselock, "mouse");
     picenable(IRQ_MOUSE);
     ioapicenable(IRQ_MOUSE, 0);
-
+    
     count = 0;
+    lastclicktick = lastdowntick = -1000;
+}
+
+void genMouseUpMessage(int btns)
+{
+  message msg;
+  msg.msg_type = M_MOUSE_UP;
+  msg.params[0] = btns;
+  handleMessage(&msg);
 }
 
 void
 genMouseMessage()
 {
-    if (packet.x_sgn) packet.x_mov -= 256;
-    if (packet.y_sgn) packet.y_mov -= 256;
-    int btns = packet.l_btn | (packet.r_btn << 1) | (packet.m_btn << 2);
-    message msg;
-    if (packet.x_mov || packet.y_mov)
+  if (packet.x_overflow || packet.y_overflow) return;
+	int x = packet.x_sgn ? (0xffffff00 | (packet.x_mov & 0xff)) : (packet.x_mov & 0xff);
+	int y = packet.y_sgn ? (0xffffff00 | (packet.y_mov & 0xff)) : (packet.y_mov & 0xff);
+/*	if(x == 127 || x == -127 || y == 127 || y == -127){
+		x = 0;
+		y = 0;
+	}*/
+	packet.x_mov = x;
+	packet.y_mov = y;
+	
+  int btns = packet.l_btn | (packet.r_btn << 1) | (packet.m_btn << 2);
+  message msg;
+  if (packet.x_mov || packet.y_mov)
+  {
+    msg.msg_type = M_MOUSE_MOVE;
+    msg.params[0] = packet.x_mov;
+    msg.params[1] = packet.y_mov;
+    msg.params[2] = btns;
+    lastdowntick = lastclicktick = -1000;
+    if (btns != lastbtn) genMouseUpMessage(btns);
+  }
+  else if (btns)
+  {
+    msg.msg_type = M_MOUSE_DOWN;
+    msg.params[0] = btns;
+    lastdowntick = packet.tick;
+  }
+  else if (packet.tick - lastdowntick < 30)
+  {
+    if (lastbtn & 1) msg.msg_type = M_MOUSE_LEFT_CLICK;
+    else msg.msg_type = M_MOUSE_RIGHT_CLICK;
+    if (packet.tick - lastclicktick < 60)
     {
-        msg.msg_type = M_MOUSE_MOVE;
-        msg.params[0] = packet.x_mov;
-        msg.params[1] = packet.y_mov;
-        msg.params[2] = btns;
+      msg.msg_type = M_MOUSE_DBCLICK;
+      lastclicktick = -1000;
     }
-    else if (btns)
-    {
-        msg.msg_type = M_MOUSE_DOWN;
-        msg.params[0] = btns;
-    }
-    else
-    {
-        msg.msg_type = M_MOUSE_UP;
-        msg.params[0] = btns;
-    }
-    handleMessage(&msg);
+    else lastclicktick = packet.tick;
+  }
+  else
+  {
+    genMouseUpMessage(btns);
+  }
+  lastbtn = btns;
+  handleMessage(&msg);
 }
 
 
 void
-mouseintr(void)
+mouseintr(uint tick)
 {
-    acquire(&mouselock);
+  acquire(&mouselock);
+  int state;
+  while (((state = inb(0x64)) & 1) == 1) {
     int data = inb(0x60);
     count++;
+
+	  if (recovery == 0 && (data & 255) == 0)
+		  recovery = 1;
+	  else if (recovery == 1 && (data & 255) == 0)
+		  recovery = 2;
+	  else if ((data & 255) == 12)
+		  recovery = 0;
+	  else
+		  recovery = -1;
 
     switch(count)
     {
         case 1: if(data & 0x08)
-            {
-                packet.y_sgn = data >> 5 & 0x1;
-                packet.x_sgn = data >> 4 & 0x1;
-                packet.m_btn = data >> 2 & 0x1;
-                packet.r_btn = data >> 1 & 0x1;
-                packet.l_btn = data >> 0 & 0x1;
-                break;
-            }
-            else
-            {
-                count = 0;
-                break;
-            }
+                {
+                    packet.y_overflow = (data >> 7) & 0x1;
+                    packet.x_overflow = (data >> 6) & 0x1;
+                    packet.y_sgn = (data >> 5) & 0x1;
+                    packet.x_sgn = (data >> 4) & 0x1;
+                    packet.m_btn = (data >> 2) & 0x1;
+                    packet.r_btn = (data >> 1) & 0x1;
+                    packet.l_btn = (data >> 0) & 0x1;
+                    break;
+                }
+                else
+                {
+                    count = 0;
+                    break;
+                }
+                 
         case 2:  packet.x_mov = data;
-            break;
+                 break;
         case 3:  packet.y_mov = data;
-            count = 0;
-            genMouseMessage();
-            break;
+                 packet.tick = tick;
+                 break;
         default: count=0;    break;
     }
 
-    release(&mouselock);
+	  if (recovery == 2)
+	  {
+		  count = 0;
+		  recovery = -1;
+	  }
+	  else if (count == 3)
+	  {
+		  count = 0;
+		  genMouseMessage();
+	  }
+	}
+
+  release(&mouselock);
 }
+
+
+
