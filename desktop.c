@@ -25,10 +25,9 @@ main(void)
     read24BitmapFile(filename, background, &h, &w);
 
 
-    Point pDraw = {0, 0};
-    Size sDraw = {600, 800};
-    api_paint24Bitmap( &wnd, background, pDraw, sDraw);
-
+    //api_paint24Bitmap(&wnd, background,(Point){0,0}, (Size){600, 800});
+    api_paint24BitmapToContent(&wnd, background, (Point){0,0}, (Point){400,300},
+            (Size){600, 800}, (Size){300, 400});
     api_repaint(&wnd);
     printf(1, "safe here\n");
     while(1 >= 0);

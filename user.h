@@ -54,6 +54,6 @@ int read24BitmapFile(char *, struct RGB *, int *, int *);
 
 // xv6_api.c
 int api_createwindow(struct Window *);
-int api_paint24Bitmap(struct Window *, struct RGB* img,
-        struct Point p, struct Size s);
+int api_paint24Bitmap(struct Window *, struct RGB*, struct Point, struct Size);
+int api_paint24BitmapToContent(struct Window*, struct RGB*,struct Point,struct Point,struct Size, struct Size);
 int api_repaint(struct Window *);
