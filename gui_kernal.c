@@ -10,9 +10,9 @@
 #include "mmu.h"
 #include "proc.h"
 //struct wndInfo wndInfoList[MAX_WINDOW_COUNT];
-
-struct Focus focus = {0, 0, 0};
+int  focus =  -1;
 struct MousePos mousePos = {0, 0};
+struct MousePos lastMousePos = {0, 0};
 struct WndInfo wndInfoList[MAX_WINDOW_COUNT];
 int wndCount = 0;
 struct spinlock guiKernelLock;
@@ -23,6 +23,42 @@ void  initMsgQueue(MsgQueue * msgQ)
     msgQ->tail = 0;
     msgQ->length = 0;
     memset(msgQ->msgList, 0, MAX_MSG_COUNT * sizeof(message));
+}
+int isQueueEmpty(MsgQueue *msgQ)
+{
+    if(msgQ->head==msgQ->tail)
+        return 1;
+    else
+        return 0;
+}
+int isQueueFull(MsgQueue *msgQ)
+{
+    if(msgQ->head==(msgQ->tail + 1) % MAX_MSG_COUNT)
+        return 1;
+    else
+        return 0;
+}
+
+int addMsgToQueue(MsgQueue *msgQ, message *msg)
+{
+    if(isQueueFull(msgQ))
+        return 0;
+    msgQ->msgList[msgQ->tail].msg_type = msg->msg_type;
+    memmove(msgQ->msgList[msgQ->tail].params, msg->params, 10 * sizeof(int));
+    msgQ->tail = (msgQ->tail + 1) % MAX_MSG_COUNT;
+    msgQ->length++;
+    return 1;
+}
+
+int getMessageFromQueue(MsgQueue *msgQ, message * msg)
+{
+    if(isQueueEmpty(msgQ))
+        return 0;
+    msg->msg_type = msgQ->msgList[msgQ->head].msg_type;
+    memmove(msg->params, msgQ->msgList[msgQ->head].params, 10 * sizeof(int));
+    msgQ->head=(msgQ->head + 1) % MAX_MSG_COUNT;
+    msgQ->length--;
+    return 1;
 }
 
 void
@@ -35,10 +71,61 @@ initGUIKernel()
     initlock(&guiKernelLock, "guiKernel");
 }
 
+#define MOUSE_SPEED_X 0.6f
+#define MOUSE_SPEED_Y -0.6f
+
+int dispatchMessage(int hwnd, message *msg)
+{
+    if(addMsgToQueue(&wndInfoList[hwnd].msgQ, msg))
+        return 1;
+    cprintf("warnning, queue overflow");
+    return 0;
+}
+
 void
 guiKernelHandleMsg(message *msg)
 {
+    acquire(&guiKernelLock);
+    message tempMsg;
+    switch(msg->msg_type)
+    {
+    case M_MOUSE_MOVE:
+        lastMousePos = mousePos;
+        mousePos.x += msg->params[0] * MOUSE_SPEED_X;
+        mousePos.y += msg->params[1] * MOUSE_SPEED_Y;
+        if (mousePos.x < 0) mousePos.x = 0;
+        if (mousePos.x > SCREEN_WIDTH) mousePos.x = SCREEN_WIDTH;
+        if (mousePos.y < 0) mousePos.y = 0;
+        if (mousePos.y > SCREEN_WIDTH) mousePos.y = SCREEN_WIDTH;
 
+        drawMouse(screen, 0, mousePos.x, mousePos.y);
+        break;
+    case M_MOUSE_DOWN:
+        break;
+    case M_MOUSE_UP:
+        break;
+    case M_MOUSE_LEFT_CLICK:
+        break;
+    case M_MOUSE_RIGHT_CLICK:
+        break;
+    case M_MOUSE_DBCLICK:
+        break;
+    case M_KEY_DOWN:
+        //cprintf("M_KEY_DOWN");
+        tempMsg.msg_type = msg->msg_type;
+        tempMsg.params[0] = msg->params[0];
+        tempMsg.params[1] = msg->params[1];
+        dispatchMessage(focus, &tempMsg);
+        break;
+    case M_KEY_UP:
+        //cprintf("M_KEY_UP");
+        tempMsg.msg_type = msg->msg_type;
+        tempMsg.params[0] = msg->params[0];
+        tempMsg.params[1] = msg->params[1];
+        dispatchMessage(focus, &tempMsg);
+        break;
+    }
+    release(&guiKernelLock);
 }
 
 
@@ -48,6 +135,12 @@ void setRect(struct Rect *rect, int x, int y, int h, int w)
     rect->y = y;
     rect->h = h;
     rect->w = w;
+}
+
+int focusOnWindow(int hwnd)
+{
+    focus = hwnd;
+    return 0;
 }
 
 int sys_createwindow(void)
@@ -60,21 +153,9 @@ int sys_createwindow(void)
     argint(2, &cx);
     argint(3, &cy);
     argstr(4, &title);
-    cprintf("%d %d %d %d\n", x, y, cx, cy);
-//    argptr(5, (char**)(&content), sizeof(RGB));
-
     int p;
     argint(5, &p);
     content = (RGB *) p;
-    cprintf("Ptr exam %d\n", content);
-    /*RGBA color;*/
-    /*color.A = 255;*/
-    /*color.R = 255;*/
-    /*color.G = 0;*/
-    /*color.B = 0;*/
-    /*drawString(screen, 100, 200, "Hello World!", color);*/
-    /*drawMouse(screen, 0, 100, 100);*/
-    /*drawMouse(screen, 1, 100, 120);*/
 
     acquire(&guiKernelLock);
     //Add to the wndList
@@ -89,6 +170,8 @@ int sys_createwindow(void)
             wndInfoList[i].procPtr = proc;
             wndInfoList[i].content = content;
             initMsgQueue(&wndInfoList[i].msgQ);
+            focusOnWindow(i);
+            break;
        }
     }
     release(&guiKernelLock);
@@ -98,7 +181,7 @@ int sys_createwindow(void)
 int testXXX(RGB * p)
 {
     cprintf("%d %d %d", p->R, p->G, p->B);
-    cprintf("asdasda");
+    cprintf("Test XXX\n");
     return 0;
 }
 
@@ -107,24 +190,21 @@ int sys_repaintwindow()
     int hwnd;
     argint(0, &hwnd);
 
-    cprintf("%d\n", wndInfoList[hwnd].procPtr);
-    cprintf("Draw check %d\n",wndInfoList[hwnd].content);
     RGB* p = wndInfoList[hwnd].content;
-    testXXX(p);
     drawRGBContentToContent(screen, p,0, 0, 800, 600);
     //if (proc == 0)
 //		switchkvm();
 //	else
 //		switchuvm(proc);
-
-
-    // drawString(screen, 100, 200, "Hello World!", color);
-    /*drawMouse(screen, 0, 100, 100);*/
-    /*drawMouse(screen, 1, 100, 120);*/
    return 0;
 }
 
-/*void dispatchMessage(msg *, wndInfo *)*/
-/*{*/
+int sys_getmessage()
+{
+    int hwnd, p;
+    argint(0, &hwnd);
+    argint(1, &p);
+    message *msg = (message *) p;
 
-/*}*/
+    return getMessageFromQueue(&wndInfoList[hwnd].msgQ, msg);
+}

@@ -2,6 +2,7 @@
 #include "xv6_api.h"
 #include "user.h"
 #include "gui_base.h"
+#include "msg.h"
 
 int api_createwindow(Window* wnd)
 {
@@ -58,4 +59,19 @@ int api_repaint(Window* wnd)
 {
     repaintwindow(wnd->hwnd);
     return 0;
+}
+
+int api_exec(Window* wnd, ProcFun pf)
+{
+    message msg;
+    int r = 0;
+    while(1)
+    {
+        r = getmessage(wnd->hwnd, &msg);
+        if(r)
+        {
+            pf(&msg);
+        }
+    }
+    return -1;
 }

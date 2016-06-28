@@ -37,16 +37,6 @@ void initGUI() {
     mouse_color[1].B = 200;
     mouse_color[1].R = 200;
 
-    uint x, y;
-    uchar *b = (uchar *) screen;
-    for (x = 0; x < SCREEN_WIDTH; x++)
-        for (y = 0; y < SCREEN_HEIGHT; y++) {
-            b[0] = 0xFF;
-            b[1] = 0x00;
-            b[2] = 0x00;
-            b += 3;
-        }
-
     cprintf("@Screen Width:   %d\n", SCREEN_WIDTH);
     cprintf("@Screen Height:  %d\n", SCREEN_HEIGHT);
     cprintf("@Bits per pixel: %d\n",*((uchar*)(KERNBASE+0x1019)));
