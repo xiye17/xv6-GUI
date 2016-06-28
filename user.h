@@ -68,3 +68,6 @@ int api_update(struct Window *, struct Rect);
 int api_settimer(struct Window *, int);
 int api_exec(struct Window *, ProcFun);
 int api_fastrand();
+int api_drawPointAlpha(struct RGB*, struct RGBA);
+int api_drawCharacter(struct Window *, int, int, char, struct RGBA);
+int api_drawString(struct Window *, int, int, char *, struct RGBA);

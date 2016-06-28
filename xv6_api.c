@@ -3,6 +3,7 @@
 #include "user.h"
 #include "gui_base.h"
 #include "msg.h"
+#include "character.h"
 
 static unsigned int g_seed = 0;
 
@@ -116,3 +117,57 @@ int api_settimer(Window* wnd, int interval)
     settimer(wnd->hwnd, interval);
     return 0;
 }
+
+int api_drawPointAlpha(RGB* color, RGBA origin) {
+    float alpha;
+    if (origin.A == 255) {
+        color->R = origin.R;
+        color->G = origin.G;
+        color->B = origin.B;
+        return 0;
+    }
+    if (origin.A == 0) {
+        return 0;
+    }
+    alpha = (float)origin.A / 255;
+    color->R = color->R * (1 - alpha) + origin.R * alpha;
+    color->G = color->G * (1 - alpha) + origin.G * alpha;
+    color->B = color->B * (1 - alpha) + origin.B * alpha;
+    return 0;
+}
+
+int api_drawCharacter(Window *wnd, int x, int y, char ch, RGBA color) {
+    int i, j;
+    RGB *t;
+    RGB * buf =wnd->content;
+    int ord = ch - 0x20;
+    if (ord < 0 || ord >= (CHARACTER_NUMBER - 1)) {
+        return -1;
+    }
+    for (i = 0; i < CHARACTER_HEIGHT; i++) {
+        if (y + i > wnd->size.h || y + i < 0) {
+            break;
+        }
+        for (j = 0; j < CHARACTER_WIDTH; j++) {
+            if (character[ord][i][j] == 1) {
+                if (x + j > wnd->size.w || x + j < 0) {
+                    break;
+                }
+                t = buf + (y + i) * wnd->size.w + x + j;
+                api_drawPointAlpha(t, color);
+            }
+        }
+    }
+    return CHARACTER_WIDTH;
+}
+int api_drawString(Window *wnd, int x, int y, char *str, RGBA color) {
+    int offset_x = 0;
+
+    while (*str != '\0') {
+        offset_x += api_drawCharacter(wnd, x + offset_x, y, *str, color);
+        str++;
+   }
+
+   return 0;
+}
+
