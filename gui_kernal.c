@@ -166,6 +166,13 @@ void initDesktop() {
     drawRGBContentToContent(screen_buf2, wndInfoList[0].content, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 }
 
+int testXXX(RGB * p)
+{
+    cprintf("%d %d %d", p->R, p->G, p->B);
+    cprintf("Test XXX\n");
+    return 0;
+}
+
 int sys_createwindow(void)
 {
     int x, y, cx, cy;
@@ -200,14 +207,7 @@ int sys_createwindow(void)
     }
 
     release(&guiKernelLock);
-    return 0;
-}
-
-int testXXX(RGB * p)
-{
-    cprintf("%d %d %d", p->R, p->G, p->B);
-    cprintf("Test XXX\n");
-    return 0;
+    return i;
 }
 
 int repainted = 0;
