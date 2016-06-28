@@ -102,7 +102,7 @@ int dispatchMessage(int hwnd, message *msg)
 int drawWndTitleBar(RGB * buf,int hwnd)
 {
     WndInfo *wnd = &wndInfoList[hwnd];
-    if (wnd->title[0]=='\0')
+    if (hwnd==0)
         return 0;
     int i = 0;
     int x = wnd->wndTitleBar.x;
