@@ -147,32 +147,36 @@ void draw24Image(RGB *buf, RGB *img, int x, int y, int width, int height) {
 }
 
 void drawRGBContentToContent(RGB *buf, RGB *img, int x, int y, int width, int height) {
-    int i, j;
+    int i;
     RGB *t , *o;
+
+    int line = width;
+    if ((SCREEN_WIDTH -x) < line)
+        line = SCREEN_WIDTH - x;
+
     for (i = 0; i < height; ++i)
     {
-         for (j = 0; j < width; ++j)
-         {
-            t = buf + (y + i) * SCREEN_WIDTH + x + j;
-            o = img + i * width +j;
-            drawPoint(t, *o);
-         }
+        t = buf + (y + i) * SCREEN_WIDTH + x;
+        o = img + i * width;
+        memmove(t, o, line * 3);
     }
 }
 
 void drawRGBContentToContentPart(RGB *buf, RGB *img, int x, int y,
     int bx, int by, int bh, int bw, int h, int w)
 {
-    int i, j;
+    int i;
     RGB *t , *o;
+    int line = SCREEN_WIDTH - x;
+    if ((bw - bx) < line)
+        line = bw -bx;
+    if (w < (bw - bx))
+        line = w;
     for (i = 0; i < h; ++i)
     {
-        for (j = 0; j < w; ++j)
-        {
-           t = buf + (y + i) * SCREEN_WIDTH + x + j;
-           o = img + (by + i) * bw + bx + j;
-           drawPoint(t, *o);
-        }
+        t = buf + (y + i) * SCREEN_WIDTH + x;
+        o = img + (by + i) * bw + bx;
+        memmove(t, o, line * 3);
     }
 }
 

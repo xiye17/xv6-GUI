@@ -42,6 +42,7 @@ void MsgProc(struct message * msg)
         break;
     }
 }
+
 int
 main(void)
 {
