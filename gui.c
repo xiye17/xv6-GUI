@@ -196,6 +196,10 @@ void drawMouse(RGB *buf, int mode, int x, int y) {
     }
 }
 
+void clearMouse(RGB *buf, RGB *temp_buf, int x, int y) {
+    drawRGBContentToContentPart(buf, temp_buf, x, y, x, y, SCREEN_HEIGHT, SCREEN_WIDTH, MOUSE_HEIGHT, MOUSE_WIDTH);
+}
+
 void sys_hello() {
     RGB *image;
     int i;

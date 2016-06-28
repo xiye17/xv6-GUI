@@ -14,6 +14,7 @@ int  focus =  -1;
 struct MousePos mousePos = {0, 0};
 struct MousePos lastMousePos = {0, 0};
 struct WndInfo wndInfoList[MAX_WINDOW_COUNT];
+int focusList[MAX_WINDOW_COUNT];
 int wndCount = 0;
 struct spinlock guiKernelLock;
 
@@ -24,6 +25,7 @@ void  initMsgQueue(MsgQueue * msgQ)
     msgQ->length = 0;
     memset(msgQ->msgList, 0, MAX_MSG_COUNT * sizeof(message));
 }
+
 int isQueueEmpty(MsgQueue *msgQ)
 {
     if(msgQ->head==msgQ->tail)
@@ -69,6 +71,7 @@ initGUIKernel()
     for(i = 0; i < MAX_WINDOW_COUNT; ++i)
         wndInfoList[i].hwnd = -1;
 
+
 }
 
 #define MOUSE_SPEED_X 0.6f
@@ -97,7 +100,7 @@ guiKernelHandleMsg(message *msg)
         if (mousePos.x > SCREEN_WIDTH) mousePos.x = SCREEN_WIDTH;
         if (mousePos.y < 0) mousePos.y = 0;
         if (mousePos.y > SCREEN_WIDTH) mousePos.y = SCREEN_WIDTH;
-
+        clearMouse(screen, screen_buf2,lastMousePos.x, lastMousePos.y);
         drawMouse(screen, 0, mousePos.x, mousePos.y);
         break;
     case M_MOUSE_DOWN:
@@ -140,7 +143,27 @@ void setRect(struct Rect *rect, int x, int y, int w, int h)
 int focusOnWindow(int hwnd)
 {
     focus = hwnd;
+    int i;
+    for (i = 0; i < wndCount; ++i)
+    {
+        if (focusList[i] == hwnd)
+        {
+            break;
+        }
+    }
+    int j;
+    for (j = i; j < wndCount - 1; ++j)
+    {
+        focusList[j] = focusList[j + 1];
+    }
+    focusList[wndCount - 1] = hwnd;
     return 0;
+}
+
+void initDesktop() {
+    drawRGBContentToContent(screen, wndInfoList[0].content, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    drawRGBContentToContent(screen_buf1, wndInfoList[0].content, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    drawRGBContentToContent(screen_buf2, wndInfoList[0].content, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 }
 
 int sys_createwindow(void)
@@ -176,12 +199,6 @@ int sys_createwindow(void)
        }
     }
 
-    //Desktop Init
-    if (i == 0)
-    {
-
-    }
-
     release(&guiKernelLock);
     return 0;
 }
@@ -193,8 +210,13 @@ int testXXX(RGB * p)
     return 0;
 }
 
+int repainted = 0;
 int sys_repaintwindow()
 {
+    if (repainted == 0) {
+        initDesktop();
+        repainted = 1;
+    }
     int hwnd;
     argint(0, &hwnd);
 
