@@ -14,6 +14,7 @@ int  focus =  -1;
 struct MousePos mousePos = {0, 0};
 struct MousePos lastMousePos = {0, 0};
 struct WndInfo wndInfoList[MAX_WINDOW_COUNT];
+struct TimerInfo timerInfo;
 int focusList[MAX_WINDOW_COUNT];
 int wndCount = 0;
 struct spinlock guiKernelLock;
@@ -78,6 +79,12 @@ initGUIKernel()
     for(i = 0; i < MAX_WINDOW_COUNT; ++i)
         wndInfoList[i].hwnd = -1;
 
+    timerInfo.ticks = -1;
+    for(i = 0; i < MAX_WINDOW_COUNT; ++i)
+    {
+        timerInfo.intervalList[i] = -1;
+        timerInfo.countList[i] = -1;
+    }
 
 }
 
@@ -190,6 +197,19 @@ guiKernelHandleMsg(message *msg)
         tempMsg.params[1] = msg->params[1];
         dispatchMessage(focus, &tempMsg);
         break;
+    case M_TIMER:
+        tempMsg.msg_type = msg->msg_type;
+        tempMsg.params[0] = msg->params[0];
+        for(i = 0; i < wndCount; ++i)
+        {
+            timerInfo.ticks = msg->params[0];
+            if(timerInfo.intervalList[i]==-1)
+                continue;
+            timerInfo.countList[i] += 10;
+            if (timerInfo.countList[i] % timerInfo.intervalList[i] == 0)
+                dispatchMessage(i, &tempMsg);
+        }
+        break;
     }
     release(&guiKernelLock);
 }
@@ -288,6 +308,15 @@ int sys_repaintwindow()
 
 int sys_settimer()
 {
+    int hwnd, interval;
+    argint(0, &hwnd);
+    argint(1, &interval);
+
+    acquire(&guiKernelLock);
+
+    timerInfo.intervalList[hwnd] = interval;
+    timerInfo.countList[hwnd] = 0;
+    release(&guiKernelLock);
     return 0;
 }
 

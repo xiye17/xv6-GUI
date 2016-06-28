@@ -37,6 +37,9 @@ void MsgProc(struct message * msg)
     case M_KEY_UP:
         printf(1, "USER K UP%d %d\n", msg->params[0], msg->params[1]);
         break;
+    case M_TIMER:
+        printf(1, "USER TIMER %d\n", msg->params[0]);
+        break;
     }
 }
 int
@@ -57,6 +60,7 @@ main(void)
     //api_paint24Bitmap(&wnd, background,(Point){0,0}, (Size){600, 800});
     api_paint24BitmapToContent(&wnd, background, (Point){0,0}, (Point){0,0},
             (Size){600, 800}, (Size){600, 800});
+    api_settimer(&wnd, 1000);
     api_repaint(&wnd);
     printf(1, "safe here\n");
     api_exec(&wnd, &MsgProc);

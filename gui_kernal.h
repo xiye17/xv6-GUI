@@ -39,4 +39,9 @@ typedef struct MousePos {
     int y;
 } MousePos;
 
+typedef struct TimerInfo {
+    int ticks;
+    int intervalList[MAX_WINDOW_COUNT];
+    int countList[MAX_WINDOW_COUNT];
+} TimerInfo;
 #endif
