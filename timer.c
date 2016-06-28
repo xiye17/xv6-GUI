@@ -3,6 +3,7 @@
 // SMP machines use the local APIC timer.
 
 #include "types.h"
+#include "msg.h"
 #include "defs.h"
 #include "traps.h"
 #include "x86.h"
@@ -29,4 +30,12 @@ timerinit(void)
   outb(IO_TIMER1, TIMER_DIV(100) % 256);
   outb(IO_TIMER1, TIMER_DIV(100) / 256);
   picenable(IRQ_TIMER);
+}
+
+int timerintr(uint tick) {
+  message msg;
+  msg.msg_type = M_TIMER;
+  msg.params[0] = tick;
+  handleMessage(&msg);
+  return 0;
 }
