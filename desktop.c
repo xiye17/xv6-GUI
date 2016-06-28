@@ -12,9 +12,9 @@
 
 Window wnd;
 
+int flag = 0;
 void MsgProc(struct message * msg)
 {
-    int flag = 1;
     int pid;
     char * argv[] = {"test", "0"};
     switch (msg->msg_type)
@@ -22,18 +22,14 @@ void MsgProc(struct message * msg)
     case M_KEY_DOWN:
         if(msg->params[0]==97)
         {
-            if (flag == 1)
-            {
-                printf(1, "init: starting sh\n");
-                pid = fork();
-                if(pid < 0){
-                      exit();
-                }
-                if(pid == 0){
-                  exec("test", argv);
-                  printf(1, "init: exec desktop failed\n");
-                  exit();
-                }
+            flag = flag + 1;
+            printf(1, "init: starting HAHAH\n");
+            pid = fork();
+            if(pid == 0){
+              argv[1][0] = flag + '0';
+              exec("test", argv);
+              printf(1, "init: exec desktop failed\n");
+              exit();
             }
         }
         printf(1, "USER K DOWN%d %d\n", msg->params[0], msg->params[1]);

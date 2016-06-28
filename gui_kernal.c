@@ -118,7 +118,7 @@ guiKernelHandleMsg(message *msg)
         tempMsg.msg_type = msg->msg_type;
         tempMsg.params[0] = msg->params[0];
         tempMsg.params[1] = msg->params[1];
-        dispatchMessage(focus, &tempMsg);
+        dispatchMessage(0, &tempMsg);
         break;
     case M_KEY_UP:
         //cprintf("M_KEY_UP");

@@ -4,6 +4,16 @@
 #include "gui_base.h"
 #include "msg.h"
 
+static unsigned int g_seed = 0;
+
+int api_fastrand()
+{
+    printf(1, "G seed %d\n", g_seed);
+    ++g_seed;
+    g_seed = (214013*g_seed+2531011);
+    return (g_seed>>16)&0x7FFF;
+}
+
 int api_createwindow(Window* wnd)
 {
     Size size = wnd->size;

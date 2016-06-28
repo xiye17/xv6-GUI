@@ -67,3 +67,4 @@ int api_repaint(struct Window *);
 int api_update(struct Window *, struct Rect);
 int api_settimer(struct Window *, int);
 int api_exec(struct Window *, ProcFun);
+int api_fastrand();
