@@ -18,6 +18,13 @@ int focusList[MAX_WINDOW_COUNT];
 int wndCount = 0;
 struct spinlock guiKernelLock;
 
+int testXXX(RGB * p)
+{
+    cprintf("%d %d %d", p->R, p->G, p->B);
+    cprintf("Test XXX\n");
+    return 0;
+}
+
 void  initMsgQueue(MsgQueue * msgQ)
 {
     msgQ->head = 0;
@@ -85,25 +92,78 @@ int dispatchMessage(int hwnd, message *msg)
     return 0;
 }
 
+int focusOnWindow(int hwnd)
+{
+    focus = hwnd;
+    int i;
+    for (i = 0; i < wndCount; ++i)
+    {
+        if (focusList[i] == hwnd)
+        {
+            break;
+        }
+    }
+    int j;
+    for (j = i; j < wndCount - 1; ++j)
+    {
+        focusList[j] = focusList[j + 1];
+    }
+    focusList[wndCount - 1] = hwnd;
+    testXXX(wndInfoList[wndCount - 1].content);
+    for (i = 0; i < wndCount; ++i) {
+        switchuvm(wndInfoList[i].procPtr);
+        drawRGBContentToContent(screen_buf2, wndInfoList[i].content, wndInfoList[i].wndBody.x, wndInfoList[i].wndBody.y, wndInfoList[i].wndBody.w, wndInfoList[i].wndBody.h);
+        if (i != wndCount - 1) {
+            drawRGBContentToContent(screen_buf1, wndInfoList[i].content, wndInfoList[i].wndBody.x, wndInfoList[i].wndBody.y, wndInfoList[i].wndBody.w, wndInfoList[i].wndBody.h);
+        }
+        if (proc == 0) {
+            switchkvm();
+        } else {
+            switchuvm(proc);
+        }
+    }
+    drawRGBContentToContent(screen, screen_buf2, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    return 0;
+}
+
 void
 guiKernelHandleMsg(message *msg)
 {
     acquire(&guiKernelLock);
     message tempMsg;
+    int i;
     switch(msg->msg_type)
     {
     case M_MOUSE_MOVE:
         lastMousePos = mousePos;
         mousePos.x += msg->params[0] * MOUSE_SPEED_X;
         mousePos.y += msg->params[1] * MOUSE_SPEED_Y;
-        if (mousePos.x < 0) mousePos.x = 0;
-        if (mousePos.x > SCREEN_WIDTH) mousePos.x = SCREEN_WIDTH;
-        if (mousePos.y < 0) mousePos.y = 0;
-        if (mousePos.y > SCREEN_WIDTH) mousePos.y = SCREEN_WIDTH;
+        if (mousePos.x < 0) {
+            mousePos.x = 0;
+        }
+        if (mousePos.x > SCREEN_WIDTH) {
+            mousePos.x = SCREEN_WIDTH;
+        }
+        if (mousePos.y < 0) {
+            mousePos.y = 0;
+        }
+        if (mousePos.y > SCREEN_WIDTH) {
+            mousePos.y = SCREEN_WIDTH;
+        }
+            cprintf("%d", wndCount);
         clearMouse(screen, screen_buf2,lastMousePos.x, lastMousePos.y);
         drawMouse(screen, 0, mousePos.x, mousePos.y);
         break;
     case M_MOUSE_DOWN:
+        for (i = wndCount - 1; i >= 0; i--) {
+            if (mousePos.x > wndInfoList[i].wndBody.x && mousePos.x < wndInfoList[i].wndBody.x + wndInfoList[i].wndBody.w && mousePos.y > wndInfoList[i].wndBody.y && mousePos.y < wndInfoList[i].wndBody.y + wndInfoList[i].wndBody.h) {
+                break;
+            }
+        }
+        cprintf("%d", i);
+        if (focus != i) {
+            focusOnWindow(i);
+        }
         break;
     case M_MOUSE_UP:
         break;
@@ -140,37 +200,10 @@ void setRect(struct Rect *rect, int x, int y, int w, int h)
     rect->h = h;
 }
 
-int focusOnWindow(int hwnd)
-{
-    focus = hwnd;
-    int i;
-    for (i = 0; i < wndCount; ++i)
-    {
-        if (focusList[i] == hwnd)
-        {
-            break;
-        }
-    }
-    int j;
-    for (j = i; j < wndCount - 1; ++j)
-    {
-        focusList[j] = focusList[j + 1];
-    }
-    focusList[wndCount - 1] = hwnd;
-    return 0;
-}
-
 void initDesktop() {
     drawRGBContentToContent(screen, wndInfoList[0].content, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     drawRGBContentToContent(screen_buf1, wndInfoList[0].content, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     drawRGBContentToContent(screen_buf2, wndInfoList[0].content, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-}
-
-int testXXX(RGB * p)
-{
-    cprintf("%d %d %d", p->R, p->G, p->B);
-    cprintf("Test XXX\n");
-    return 0;
 }
 
 int sys_createwindow(void)
@@ -201,6 +234,7 @@ int sys_createwindow(void)
             wndInfoList[i].procPtr = proc;
             wndInfoList[i].content = content;
             initMsgQueue(&wndInfoList[i].msgQ);
+            wndCount += 1;
             focusOnWindow(i);
             break;
        }
@@ -220,13 +254,30 @@ int sys_repaintwindow()
     int hwnd;
     argint(0, &hwnd);
 
-    RGB* p = wndInfoList[hwnd].content;
-    Rect * rect = &wndInfoList[hwnd].wndBody;
-    drawRGBContentToContent(screen, p, rect->x, rect->y,rect->w , rect->h);
-    //if (proc == 0)
-//		switchkvm();
-//	else
-//		switchuvm(proc);
+//    RGB* p = wndInfoList[hwnd].content;
+//    Rect * rect = &wndInfoList[hwnd].wndBody;
+//    drawRGBContentToContent(screen, p, rect->x, rect->y,rect->w , rect->h);
+    int i;
+    for (i = 0; i < wndCount; ++i) {
+        switchuvm(wndInfoList[i].procPtr);
+        cprintf("%d", i);
+        testXXX(wndInfoList[i].content);
+        drawRGBContentToContent(screen_buf2, wndInfoList[i].content, wndInfoList[i].wndBody.x, wndInfoList[i].wndBody.y, wndInfoList[i].wndBody.w, wndInfoList[i].wndBody.h);
+        cprintf("213\n");
+        if (i != wndCount - 1) {
+            drawRGBContentToContent(screen_buf1, wndInfoList[i].content, wndInfoList[i].wndBody.x, wndInfoList[i].wndBody.y, wndInfoList[i].wndBody.w, wndInfoList[i].wndBody.h);
+        }
+        if (proc == 0) {
+            switchkvm();
+        } else {
+            switchuvm(proc);
+        }
+    }
+    drawRGBContentToContent(screen, screen_buf2, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    if (proc == 0)
+		switchkvm();
+	else
+		switchuvm(proc);
    return 0;
 }
 

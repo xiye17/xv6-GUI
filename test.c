@@ -29,12 +29,9 @@ main(int argc, char *argv[])
     wnd.size.w = 300;
     wnd.size.h = 300;
     wnd.title = "windowtest";
-    printf(1, "X Dog %d %d", wnd.pos.x, wnd.pos.y);
     api_createwindow(&wnd);
     memset(wnd.content, pra * 50, wnd.size.w * wnd.size.h * 3);
     api_repaint(&wnd);
-    printf(1, "Wana Die");
-    printf(1, "safe here\n");
     api_exec(&wnd, &MsgProc);
     return 0;
 }
