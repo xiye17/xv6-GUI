@@ -18,11 +18,30 @@ struct TimerInfo timerInfo;
 int focusList[MAX_WINDOW_COUNT];
 int wndCount = 0;
 struct spinlock guiKernelLock;
+int mouseDownInContent = 0;
+int mouseDownInBar = 0;
 
 int testXXX(RGB * p)
 {
     cprintf("%d %d %d", p->R, p->G, p->B);
     cprintf("Test XXX\n");
+    return 0;
+}
+
+// return 0 not in return 1 in content return 2 in bar
+int mouseInWin(int px, int py, int hwnd)
+{
+    Rect * body = &wndInfoList[hwnd].wndBody;
+    Rect * bar = &wndInfoList[hwnd].wndTitleBar;
+
+    if(px <= body->x || px >= (body->x + body->w))
+        return 0;
+
+    if(py > body->y && py <(body->y + body->h))
+        return 1;
+    if(py > bar->y && py < (bar->y + bar->h))
+        return 2;
+
     return 0;
 }
 
@@ -173,6 +192,7 @@ guiKernelHandleMsg(message *msg)
     acquire(&guiKernelLock);
     message tempMsg;
     int i;
+    int tempR;
     switch(msg->msg_type)
     {
     case M_MOUSE_MOVE:
@@ -197,11 +217,19 @@ guiKernelHandleMsg(message *msg)
         break;
     case M_MOUSE_DOWN:
         for (i = wndCount - 1; i >= 0; i--) {
-            if (mousePos.x > wndInfoList[i].wndBody.x && mousePos.x < wndInfoList[i].wndBody.x + wndInfoList[i].wndBody.w && mousePos.y > wndInfoList[i].wndBody.y && mousePos.y < wndInfoList[i].wndBody.y + wndInfoList[i].wndBody.h) {
+
+            tempR = mouseInWin(mousePos.x, mousePos.y, focusList[i]);
+            if(tempR == 1) {
+                mouseDownInContent = 1;
+                cprintf("Mouse Content in %d\n", focusList[i]);
+                break;
+            }
+            if(tempR == 2) {
+                mouseDownInBar = 1;
+                cprintf("Mouse Bar in %d\n", focusList[i]);
                 break;
             }
         }
-        cprintf("%d", i);
         if (focus != i) {
             focusOnWindow(i);
         }
@@ -296,7 +324,6 @@ int sys_createwindow(void)
             break;
        }
     }
-
     release(&guiKernelLock);
     return i;
 }
@@ -338,6 +365,8 @@ int sys_getmessage()
     argint(1, &p);
     message *msg = (message *) p;
 
+    if (proc != wndInfoList[hwnd].procPtr)
+        return 0;
     acquire(&guiKernelLock);
     int r = getMessageFromQueue(&wndInfoList[hwnd].msgQ, msg);
     release(&guiKernelLock);
