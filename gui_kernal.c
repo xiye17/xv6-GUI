@@ -225,3 +225,37 @@ int sys_getmessage()
     release(&guiKernelLock);
     return r;
 }
+
+int updateWindow(int hwnd, int x, int y, int w, int h)
+{
+    WndInfo * wnd = &wndInfoList[hwnd];
+    int bx = x;
+    int by = y;
+    int bh = wnd->wndBody.h;
+    int bw = wnd->wndBody.w;
+
+    x = x + wnd->wndBody.x;
+    y = y + wnd->wndBody.y;
+    /*void drawRGBContentToContentPart(RGB *buf, RGB *img, int x, int y,*/
+    /*int bx, int by, int bh, int bw, int h, int w)*/
+
+    drawRGBContentToContentPart(screen, wnd->content, x, y, bx, by, bh, bw, h, w);
+
+    return 0;
+}
+
+int sys_updatewindow()
+{
+    int hwnd, x, y, cx, cy;
+    argint(0, &hwnd);
+    argint(1, &x);
+    argint(2, &y);
+    argint(3, &cx);
+    argint(4, &cy);
+
+    acquire(&guiKernelLock);
+    updateWindow(hwnd, x, y, cx, cy);
+
+    release(&guiKernelLock);
+    return 0;
+}

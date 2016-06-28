@@ -6,6 +6,7 @@ struct Window;
 struct Point;
 struct Size;
 struct message;
+struct Rect;
 
 // system calls
 int fork(void);
@@ -35,6 +36,7 @@ typedef void (* ProcFun)(struct message *);
 // system calls for gui
 int createwindow(int, int, int, int, char *, struct RGB*);
 int repaintwindow(int);
+int updatewindow(int, int, int, int, int);
 int getmessage(int,struct message *);
 int settimer(int , int);
 
@@ -62,5 +64,6 @@ int api_paint24Bitmap(struct Window *, struct RGB*, struct Point, struct Size);
 int api_paint24BitmapToContent(struct Window*, struct RGB*,struct Point,struct Point,struct Size, struct Size);
 int api_paintContentToContent(struct Window*, struct RGB*,struct Point,struct Point,struct Size, struct Size);
 int api_repaint(struct Window *);
+int api_update(struct Window *, struct Rect);
 int api_settimer(struct Window *, int);
 int api_exec(struct Window *, ProcFun);

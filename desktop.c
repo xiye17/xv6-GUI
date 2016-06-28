@@ -40,8 +40,8 @@ main(void)
     read24BitmapFile(filename, background, &h, &w);
 
     //api_paint24Bitmap(&wnd, background,(Point){0,0}, (Size){600, 800});
-    api_paintContentToContent(&wnd, background, (Point){0,0}, (Point){0,0},
-            (Size){600, 800}, (Size){600, 800});
+    api_paint24BitmapToContent(&wnd, background, (Point){0,0}, (Point){0,0},
+            (Size){600, 800}, (Size){300, 100});
     api_repaint(&wnd);
     printf(1, "safe here\n");
     api_exec(&wnd, &MsgProc);

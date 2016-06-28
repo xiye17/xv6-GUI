@@ -103,6 +103,7 @@ extern int sys_createwindow(void);
 extern int sys_repaintwindow(void);
 extern int sys_getmessage(void);
 extern int sys_settimer(void);
+extern int sys_updatewindow(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -131,6 +132,7 @@ static int (*syscalls[])(void) = {
 [SYS_repaintwindow]   sys_repaintwindow,
 [SYS_getmessage]      sys_getmessage,
 [SYS_settimer]        sys_settimer,
+[SYS_updatewindow]    sys_updatewindow,
 };
 
 void

@@ -80,6 +80,12 @@ int api_repaint(Window* wnd)
     return 0;
 }
 
+int api_update(Window* wnd, Rect rect)
+{
+    updatewindow(wnd->hwnd, rect.x, rect.y, rect.h, rect.w);
+    return 0;
+}
+
 int api_exec(Window* wnd, ProcFun pf)
 {
     message msg;

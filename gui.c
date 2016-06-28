@@ -159,6 +159,23 @@ void drawRGBContentToContent(RGB *buf, RGB *img, int x, int y, int width, int he
          }
     }
 }
+
+void drawRGBContentToContentPart(RGB *buf, RGB *img, int x, int y,
+    int bx, int by, int bh, int bw, int h, int w)
+{
+    int i, j;
+    RGB *t , *o;
+    for (i = 0; i < h; ++i)
+    {
+        for (j = 0; j < w; ++j)
+        {
+           t = buf + (y + i) * SCREEN_WIDTH + x + j;
+           o = img + (by + i) * bw + bx + j;
+           drawPoint(t, *o);
+        }
+    }
+}
+
 void drawMouse(RGB *buf, int mode, int x, int y) {
     int i, j;
     RGB *t;
