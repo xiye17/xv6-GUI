@@ -20,6 +20,8 @@
 #define M_MOUSE_RIGHT_CLICK 7
 #define M_MOUSE_DBCLICK 8
 
+#define M_TIMER 9
+
 typedef struct message {
     int msg_type;
     int params[10];

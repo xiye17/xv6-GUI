@@ -170,6 +170,7 @@ void            syscall(void);
 
 // timer.c
 void            timerinit(void);
+int             timerintr(uint);
 
 // trap.c
 void            idtinit(void);
