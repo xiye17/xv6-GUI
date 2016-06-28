@@ -94,3 +94,9 @@ int api_exec(Window* wnd, ProcFun pf)
     }
     return -1;
 }
+
+int api_settimer(Window* wnd, int interval)
+{
+    settimer(wnd->hwnd, interval);
+    return 0;
+}

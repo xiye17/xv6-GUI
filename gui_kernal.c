@@ -68,7 +68,7 @@ initGUIKernel()
     int i;
     for(i = 0; i < MAX_WINDOW_COUNT; ++i)
         wndInfoList[i].hwnd = -1;
-    initlock(&guiKernelLock, "guiKernel");
+
 }
 
 #define MOUSE_SPEED_X 0.6f
@@ -129,12 +129,12 @@ guiKernelHandleMsg(message *msg)
 }
 
 
-void setRect(struct Rect *rect, int x, int y, int h, int w)
+void setRect(struct Rect *rect, int x, int y, int w, int h)
 {
     rect->x = x;
     rect->y = y;
-    rect->h = h;
     rect->w = w;
+    rect->h = h;
 }
 
 int focusOnWindow(int hwnd)
@@ -199,12 +199,18 @@ int sys_repaintwindow()
     argint(0, &hwnd);
 
     RGB* p = wndInfoList[hwnd].content;
-    drawRGBContentToContent(screen, p,0, 0, 800, 600);
+    Rect * rect = &wndInfoList[hwnd].wndBody;
+    drawRGBContentToContent(screen, p, rect->x, rect->y,rect->w , rect->h);
     //if (proc == 0)
 //		switchkvm();
 //	else
 //		switchuvm(proc);
    return 0;
+}
+
+int sys_settimer()
+{
+    return 0;
 }
 
 int sys_getmessage()

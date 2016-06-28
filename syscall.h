@@ -24,3 +24,4 @@
 #define SYS_createwindow 23
 #define SYS_repaintwindow 24
 #define SYS_getmessage 25
+#define SYS_settimer   26
