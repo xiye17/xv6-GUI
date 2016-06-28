@@ -159,6 +159,7 @@ int sys_createwindow(void)
 
     acquire(&guiKernelLock);
     //Add to the wndList
+
     int i;
     for (i = 0; i < MAX_WINDOW_COUNT; ++i)
     {
@@ -174,6 +175,13 @@ int sys_createwindow(void)
             break;
        }
     }
+
+    //Desktop Init
+    if (i == 0)
+    {
+
+    }
+
     release(&guiKernelLock);
     return 0;
 }
@@ -206,5 +214,8 @@ int sys_getmessage()
     argint(1, &p);
     message *msg = (message *) p;
 
-    return getMessageFromQueue(&wndInfoList[hwnd].msgQ, msg);
+    acquire(&guiKernelLock);
+    int r = getMessageFromQueue(&wndInfoList[hwnd].msgQ, msg);
+    release(&guiKernelLock);
+    return r;
 }

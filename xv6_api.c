@@ -55,6 +55,25 @@ int api_paint24BitmapToContent(Window* wnd, struct RGB* img, Point pWnd, Point p
     return 0;
 
 }
+
+int api_paintContentToContent(Window* wnd, struct RGB* cot, Point pWnd, Point pCot, Size sCot, Size s)
+{
+    int i;
+    struct RGB *t;
+    struct RGB *o;
+    int max_line = s.w;
+    for (i = 0; i < s.h; i++) {
+        /*if (y + i > wnd->size.h || y + i < 0) {*/
+            /*break;*/
+        /*}*/
+        t = wnd->content + (pWnd.y + i) * wnd->size.w + pWnd.x;
+        // o = img + (s.h - i - 1) * s.w;
+        o = cot + (pCot.y +  i) * sCot.w + pCot.x;
+        memmove(t, o, max_line * 3);
+    }
+    return 0;
+}
+
 int api_repaint(Window* wnd)
 {
     repaintwindow(wnd->hwnd);
