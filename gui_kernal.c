@@ -110,6 +110,8 @@ int focusOnWindow(int hwnd)
     }
     focusList[wndCount - 1] = hwnd;
     testXXX(wndInfoList[wndCount - 1].content);
+
+    //acquire(&guiKernelLock);
     for (i = 0; i < wndCount; ++i) {
         switchuvm(wndInfoList[i].procPtr);
         drawRGBContentToContent(screen_buf2, wndInfoList[i].content, wndInfoList[i].wndBody.x, wndInfoList[i].wndBody.y, wndInfoList[i].wndBody.w, wndInfoList[i].wndBody.h);
@@ -123,6 +125,7 @@ int focusOnWindow(int hwnd)
         }
     }
     drawRGBContentToContent(screen, screen_buf2, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    //release(&guiKernelLock);
     return 0;
 }
 
@@ -257,10 +260,11 @@ int sys_repaintwindow()
 //    RGB* p = wndInfoList[hwnd].content;
 //    Rect * rect = &wndInfoList[hwnd].wndBody;
 //    drawRGBContentToContent(screen, p, rect->x, rect->y,rect->w , rect->h);
+    acquire(&guiKernelLock);
     int i;
     for (i = 0; i < wndCount; ++i) {
         switchuvm(wndInfoList[i].procPtr);
-        cprintf("%d", i);
+        cprintf("repaint %d\n", i);
         testXXX(wndInfoList[i].content);
         drawRGBContentToContent(screen_buf2, wndInfoList[i].content, wndInfoList[i].wndBody.x, wndInfoList[i].wndBody.y, wndInfoList[i].wndBody.w, wndInfoList[i].wndBody.h);
         cprintf("213\n");
@@ -278,6 +282,7 @@ int sys_repaintwindow()
 		switchkvm();
 	else
 		switchuvm(proc);
+    release(&guiKernelLock);
    return 0;
 }
 
