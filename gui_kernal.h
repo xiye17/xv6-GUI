@@ -22,6 +22,7 @@ typedef struct WndInfo {
     Rect wndBody;
     struct proc * procPtr;
     struct RGB * content;
+    char * title;
     MsgQueue msgQ;
 } WndInfo;
 
