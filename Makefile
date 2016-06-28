@@ -177,6 +177,7 @@ UPROGS=\
 	_wc\
 	_zombie\
 	_desktop\
+	_test\
 
 fs.img: mkfs README desktop.bmp $(UPROGS)
 	./mkfs fs.img README desktop.bmp $(UPROGS)
