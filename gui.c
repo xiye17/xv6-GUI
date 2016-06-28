@@ -99,6 +99,38 @@ void drawString(RGB *buf, int x, int y, char *str, RGBA color) {
     }
 }
 
+int drawCharacterToContent(RGB *buf, int x, int y, int cx, int cy, char ch, RGBA color) {
+    int i, j;
+    RGB *t;
+    int ord = ch - 0x20;
+    if (ord < 0 || ord >= (CHARACTER_NUMBER - 1)) {
+        return -1;
+    }
+    for (i = 0; i < CHARACTER_HEIGHT; i++) {
+        if (y + i > cy || y + i < 0) {
+            break;
+        }
+        for (j = 0; j < CHARACTER_WIDTH; j++) {
+            if (character[ord][i][j] == 1) {
+                if (x + j > cx || x + j < 0) {
+                    break;
+                }
+                t = buf + (y + i) * cx + x + j;
+                drawPointAlpha(t, color);
+            }
+        }
+    }
+    return CHARACTER_WIDTH;
+}
+
+void drawStringToContent(RGB *buf, int x, int y, int cx, int cy, char *str, RGBA color) {
+    int offset_x = 0;
+    while (*str != '\0') {
+        offset_x += drawCharacterToContent(buf, x + offset_x, y,cx, cy, *str, color);
+        str++;
+    }
+}
+
 void drawImage(RGB *buf, RGBA *img, int x, int y, int width, int height) {
     int i, j;
     RGB *t;

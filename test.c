@@ -31,12 +31,12 @@ main(int argc, char *argv[])
     wnd.title = "windowtest";
     api_createwindow(&wnd);
     memset(wnd.content, pra * 50, wnd.size.w * wnd.size.h * 3);
-    RGBA color;
-    color.R =255;
-    color.G =0;
-    color.B =0;
-    color.A =255;
-    api_drawString(&wnd, 50, 50, "2333", color);
+    /*RGBA color;*/
+    /*color.R =255;*/
+    /*color.G =0;*/
+    /*color.B =0;*/
+    /*color.A =255;*/
+    /*api_drawString(&wnd, 50, 50, "2333", color);*/
     api_repaint(&wnd);
     api_exec(&wnd, &MsgProc);
     return 0;

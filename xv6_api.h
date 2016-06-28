@@ -10,6 +10,7 @@ struct Size;
 
 #define USCREEN_WIDTH 800
 #define USCREEN_HEIGHT 600
+#define UTITLE_HEIGHT 30
 
 typedef struct Rect {
     int x;
@@ -34,6 +35,7 @@ typedef struct Window {
     Size size;
     char* title;
     struct RGB* content;
+    struct RGB* wholeContent;
 } Window;
 
 #endif

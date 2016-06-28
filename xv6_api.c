@@ -18,11 +18,12 @@ int api_fastrand()
 int api_createwindow(Window* wnd)
 {
     Size size = wnd->size;
-    wnd->content = malloc(size.w * size.h * 3);
+    wnd->wholeContent = malloc(size.w * (size.h + UTITLE_HEIGHT) * 3);
+    wnd->content = wnd->wholeContent + size.w * UTITLE_HEIGHT;
     // set all content to zero
     memset(wnd->content, 255, size.w * size.h * 3);
     wnd->hwnd = createwindow(wnd->pos.x, wnd->pos.y,
-            wnd->size.w, wnd->size.h, wnd->title, wnd->content);
+            wnd->size.w, wnd->size.h, wnd->title, wnd->wholeContent);
     return wnd->hwnd;
 }
 

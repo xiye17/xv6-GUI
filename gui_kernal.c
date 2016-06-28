@@ -99,39 +99,41 @@ int dispatchMessage(int hwnd, message *msg)
     return 0;
 }
 
-int drawWndTitleBar(RGB * buf,int hwnd)
+int drawWndTitleBar(int hwnd)
 {
     WndInfo *wnd = &wndInfoList[hwnd];
     if (hwnd==0)
         return 0;
     int i = 0;
-    int x = wnd->wndTitleBar.x;
-    int y = wnd->wndTitleBar.y;
+    /*int x = wnd->wndTitleBar.x;*/
+    /*int y = wnd->wndTitleBar.y;*/
     int w = wnd->wndTitleBar.w;
     int h = wnd->wndTitleBar.h;
     RGB * o;
+    RGB * buf = wnd->wholeContent;
     for(i = 0; i < h; ++i)
     {
-        o = buf + (y + i) * SCREEN_WIDTH + x;
+        o = buf +  i * w;
         memset(o, 118, (w - h) * 3);
-        o = buf + (y + i) * SCREEN_WIDTH + x + w - h ;
+        o = buf +  i * w + w - h ;
         memset(o, 0,  h * 3);
     }
-    drawString(buf, x + 10, y + 5, wnd->title, (RGBA){255, 255,255,255});
+    drawStringToContent(buf, 10, 5, w,h,wnd->title, (RGBA){255, 255,255,255});
     return 0;
 }
+
 int repaintAllWindow(int hwnd)
 {
     int i;
     for (i = 0; i < wndCount; ++i) {
         switchuvm(wndInfoList[i].procPtr);
-        drawWndTitleBar(screen_buf2, i);
-        drawRGBContentToContent(screen_buf2, wndInfoList[i].content, wndInfoList[i].wndBody.x,
-                wndInfoList[i].wndBody.y, wndInfoList[i].wndBody.w, wndInfoList[i].wndBody.h);
+       // drawWndTitleBar(screen_buf2, i);
+        drawRGBContentToContent(screen_buf2, wndInfoList[i].wholeContent, wndInfoList[i].wndBody.x,
+                wndInfoList[i].wndTitleBar.y, wndInfoList[i].wndBody.w, wndInfoList[i].wndBody.h + 30);
         if (i != wndCount - 1) {
-            drawWndTitleBar(screen_buf1, i);
-            drawRGBContentToContent(screen_buf1, wndInfoList[i].content, wndInfoList[i].wndBody.x,
-                    wndInfoList[i].wndBody.y, wndInfoList[i].wndBody.w, wndInfoList[i].wndBody.h);
+           // drawWndTitleBar(screen_buf1, i);
+            drawRGBContentToContent(screen_buf1, wndInfoList[i].wholeContent, wndInfoList[i].wndBody.x,
+                    wndInfoList[i].wndTitleBar.y, wndInfoList[i].wndBody.w, wndInfoList[i].wndBody.h + 30);
         }
         if (proc == 0) {
             switchkvm();
@@ -284,8 +286,10 @@ int sys_createwindow(void)
             setRect(&wndInfoList[i].wndTitleBar, x, y - 30, cx, 30);
             setRect(&wndInfoList[i].wndBody,x, y, cx, cy);
             wndInfoList[i].procPtr = proc;
-            wndInfoList[i].content = content;
+            wndInfoList[i].wholeContent = content;
+            wndInfoList[i].content = content + 30 * cx;
             wndInfoList[i].title = title;
+            drawWndTitleBar(i);
             initMsgQueue(&wndInfoList[i].msgQ);
             wndCount += 1;
             focusOnWindow(i);
