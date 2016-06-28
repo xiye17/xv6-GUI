@@ -161,11 +161,15 @@ int repaintAllWindow(int hwnd)
         }
     }
     drawRGBContentToContent(screen, screen_buf2, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    drawMouse(screen, 0, mousePos.x, mousePos.y);
     return 0;
 }
 
 int focusOnWindow(int hwnd)
 {
+    if (wndCount >= 1 && hwnd == focusList[0]) {
+        return 0;
+    }
     focus = hwnd;
     int i;
     for (i = 0; i < wndCount; ++i)
@@ -175,6 +179,7 @@ int focusOnWindow(int hwnd)
             break;
         }
     }
+
     int j;
     for (j = i; j < wndCount - 1; ++j)
     {
