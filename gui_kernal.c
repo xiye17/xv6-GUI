@@ -87,6 +87,10 @@ int isQueueFull(MsgQueue *msgQ)
 
 int addMsgToQueue(MsgQueue *msgQ, message *msg)
 {
+    if(msg->msg_type == M_CLOSE_WINDOW)
+    {
+         msgQ->msgList[msgQ->head].msg_type = M_CLOSE_WINDOW;
+    }
     if(isQueueFull(msgQ))
         return 0;
     msgQ->msgList[msgQ->tail].msg_type = msg->msg_type;
