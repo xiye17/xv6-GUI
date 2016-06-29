@@ -77,7 +77,7 @@ Point pWnd, Point pBmp, Size sBmp, Size s)
     for (i = 0; i < s.h; ++i) {
         for(j = 0; j < s.w; ++j)
         {
-             t = wnd->content + (pWnd.y + i) * wnd->size.w + pWnd.x + j;
+            t = wnd->content + (pWnd.y + i) * wnd->size.w + pWnd.x + j;
             o = img + (sBmp.h - pBmp.y - 1 - i) * sBmp.w + pBmp.x + j;
 
             if(o->R==255 && o->G == 255 && o->B==255)
@@ -194,7 +194,7 @@ int api_drawRect(Window *wnd, Point p, Size s, RGB color)
     {
         for (j = 0; j < s.w; ++j)
         {
-            o = b + (p.y + i) * wnd->size.h + p.x + j;
+            o = b + (p.y + i) * wnd->size.w + p.x + j;
             *o = color;
         }
     }
