@@ -13,8 +13,6 @@ const int pointSize = 15;
 
 Window wnd;
 
-RGB *background;
-
 int flag = 0;
 
 int isMouseInButton(int x, int y) {
@@ -26,16 +24,21 @@ int isMouseInButton(int x, int y) {
     }
 }
 
+int isMouseInContent(int x, int y) {
+   if (10 < x && x < 490 && 40 < y && y < 290){
+        return 1;
+   }
+   else {
+        return 0;
+   }
+}
+
 void MsgProc(struct message *msg) {
-
-    //int pid;
-    //char * argv[] = {"test", "0"};
-
     static int mouseDown = 0;
     static int isPencil = 1;
     switch (msg->msg_type) {
         case M_MOUSE_DOWN:
-            if (!isMouseInButton(msg->params[0], msg->params[1])) {
+            if (isMouseInButton(msg->params[0], msg->params[1]) && !isMouseInButton(msg->params[0], msg->params[1])) {
                 mouseDown = 1;
                 if (isPencil) {
                     api_drawRect(&wnd, (Point) {msg->params[0] - pointSize / 2, msg->params[1] - pointSize / 2},
@@ -49,7 +52,7 @@ void MsgProc(struct message *msg) {
             }
             break;
         case M_MOUSE_MOVE:
-            if (!isMouseInButton(msg->params[0], msg->params[1]) && mouseDown) {
+            if (isMouseInButton(msg->params[0], msg->params[1]) && !isMouseInButton(msg->params[0], msg->params[1]) && mouseDown) {
                 if (isPencil) {
                     api_drawRect(&wnd, (Point) {msg->params[0] - pointSize / 2, msg->params[1] - pointSize / 2},
                                  (Size) {pointSize, pointSize}, (RGB) {0, 0, 0});
@@ -76,6 +79,9 @@ void MsgProc(struct message *msg) {
                 api_repaint(&wnd);
             }
             break;
+       case M_CLOSE_WINDOW:
+            api_destroywindow(&wnd);
+            break;
     }
 }
 
@@ -87,18 +93,8 @@ main(void) {
     wnd.size.h = 300;
     wnd.title = "DrawerApp";
 
-    char backgroundFilename[] = "DrawerAppBackground.bmp";
-
-    background = malloc(270 * 500 * 3);
-
     int h, w;
-    read24BitmapFile(backgroundFilename, background, &h, &w);
-
     api_createwindow(&wnd);
-
-    api_paint24BitmapToContent(&wnd, background, (Point) {0, 30}, (Point) {0, 0},
-                               (Size) {270, 500}, (Size) {270, 500});
-
 
     api_drawButton(&wnd, (Point) {420, 260}, (Size) {30, 70}, "pencil");
     api_repaint(&wnd);
