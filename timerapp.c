@@ -11,7 +11,6 @@
 
 Window wnd;
 
-RGB * background;
 RGB * numbers[10];
 RGB * separator;
 
@@ -55,32 +54,11 @@ void drawNumberToContent(int minute, int second)
 
 int flag = 0;
 void MsgProc(struct message * msg)
-{
-    //int pid;
-    //char * argv[] = {"test", "0"};
+
     static int second = 0;
     static int minute = 0;
     switch (msg->msg_type)
     {
-        /*
-        case M_KEY_DOWN:
-            if(msg->params[0]==97)
-            {
-                flag = flag + 1;
-                pid = fork();
-                if(pid == 0){
-                  argv[1][0] = flag + '0';
-                  exec("test", argv);
-                  exit();
-                }
-            }
-            printf(1, "USER K DOWN%d %d\n", msg->params[0], msg->params[1]);
-            break;
-        case M_KEY_UP:
-            printf(1, "USER K UP%d %d\n", msg->params[0], msg->params[1]);
-            break;
-        */
-
         case M_TIMER:
             if (second < 59)
             {
@@ -94,6 +72,14 @@ void MsgProc(struct message * msg)
             drawNumberToContent(minute, second);
             api_repaint(&wnd);
             break;
+        case M_CLOSE_WINDOW:
+            int i;
+            free(separator);
+            for (i = 0; i < 10; i++)
+            {
+               free(numbers[i]);
+            }
+            destroywindow(&wnd);
     }
 }
 
@@ -106,12 +92,11 @@ main(void)
     wnd.size.h = 100;
     wnd.title = "TimerApp";
 
-    char  backgroundFilename[] = "TimerAppBackground.bmp";
     char* numberFilename[10] = {"0.bmp", "1.bmp", "2.bmp", "3.bmp", "4.bmp", "5.bmp", "6.bmp", "7.bmp", "8.bmp", "9.bmp"};
     char  separatorFilename[] = "separator.bmp";
 
     int i;
-    background = malloc(70 * 250 * 3);
+
     for (i = 0; i < 10; i++)
     {
         numbers[i] = malloc(55 * 40 * 3);
@@ -123,14 +108,11 @@ main(void)
     {
         read24BitmapFile(numberFilename[i], numbers[i], &h, &w);
     }
-    read24BitmapFile(backgroundFilename, background, &h, &w);
+
     read24BitmapFile(separatorFilename, separator, &h, &w);
 
     api_createwindow(&wnd);
 
-    //api_paint24Bitmap(&wnd, background,(Point){0,0}, (Size){600, 800});
-    api_paint24BitmapToContent(&wnd, background, (Point){0,30}, (Point){0,0},
-                               (Size){70, 250}, (Size){70, 250});
     api_paint24BitmapToContent(&wnd, numbers[0], (Point){185,35}, (Point){0,0},
                                (Size){55, 40}, (Size){55, 40});
     api_paint24BitmapToContent(&wnd, numbers[0], (Point){145,35}, (Point){0,0},
