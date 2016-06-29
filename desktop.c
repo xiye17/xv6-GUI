@@ -22,7 +22,7 @@ int flag = 0;
 void MsgProc(struct message * msg)
 {
     int pid;
-    char * argv[] = {"xxxxxxxxxx", "0"};
+    char * argv[] = {"xxxxxxxxxxxxxxxxxxxxxxx", "0"};
     int i;
 
     int x;
@@ -41,6 +41,7 @@ void MsgProc(struct message * msg)
     case M_MOUSE_DBCLICK:
         x = msg->params[0];
         y = msg->params[1];
+        printf(1, "DES DBC %d %d\n", x, y);
         for(i = 0; i < AppCount; ++i)
         {
             int minX, minY, maxX, maxY;
@@ -63,7 +64,7 @@ void MsgProc(struct message * msg)
             pid = fork();
             if(pid == 0){
                 argv[1][0] = flag + '0';
-                strcpy(appName[i],argv[0]);
+                strcpy(argv[0],appName[i]);
                 int len = strlen(appName[i]);
                 len = len - 4;
                 char temp[len + 1];
