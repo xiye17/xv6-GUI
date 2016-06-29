@@ -29,6 +29,7 @@ void            draw24Image(struct RGB *, struct RGB *, int , int , int , int);
 void            drawRGBContentToContent(struct RGB *, struct RGB *, int , int , int , int);
 void drawRGBContentToContentPart(struct RGB *,struct RGB *, int, int,
     int, int, int, int, int, int);
+void drawScreenToScreen(struct RGB*, struct RGB*);
 int             drawCharacterToContent(struct RGB*, int, int,int,int, char, struct RGBA);
 void            drawStringToContent(struct RGB*, int, int, int, int, char *, struct RGBA);
 

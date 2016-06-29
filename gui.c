@@ -267,6 +267,12 @@ void drawMouse(RGB *buf, int mode, int x, int y) {
     releaseGUILock(buf);
 }
 
+void drawScreenToScreen(RGB* buf, RGB* img) {
+    acquireGUILock(buf);
+    memmove(buf, img, SCREEN_WIDTH * SCREEN_HEIGHT * 3);
+    releaseGUILock(buf);
+}
+
 void clearMouse(RGB *buf, RGB *temp_buf, int x, int y) {
     drawRGBContentToContentPart(buf, temp_buf, x, y, x, y, SCREEN_HEIGHT, SCREEN_WIDTH, MOUSE_HEIGHT, MOUSE_WIDTH);
 }

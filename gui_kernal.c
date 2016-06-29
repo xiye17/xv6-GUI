@@ -177,7 +177,7 @@ int repaintAllWindow(int hwnd)
             switchuvm(proc);
         }
     }
-    drawRGBContentToContent(screen, screen_buf2, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    drawScreenToScreen(screen, screen_buf2);
     drawMouse(screen, 0, mousePos.x, mousePos.y);
     return 0;
 }
