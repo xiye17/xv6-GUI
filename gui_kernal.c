@@ -260,6 +260,12 @@ guiKernelHandleMsg(message *msg)
                 switchuvm(proc);
             }
         }
+        if (mouseDownInContent) {
+            tempMsg.msg_type = M_MOUSE_MOVE;
+            tempMsg.params[0] = mousePos.x - wndInfoList[focus].wndBody.x;
+            tempMsg.params[1] = mousePos.y - wndInfoList[focus].wndBody.y;
+            dispatchMessage(focus, &tempMsg);
+        }
         clearMouse(screen, screen_buf2,lastMousePos.x, lastMousePos.y);
         drawMouse(screen, 0, mousePos.x, mousePos.y);
         break;
@@ -279,6 +285,10 @@ guiKernelHandleMsg(message *msg)
         if (focus != focusList[i]) {
             focusOnWindow(focusList[i]);
         }
+        tempMsg.msg_type = M_MOUSE_DOWN;
+        tempMsg.params[0] = mousePos.x - wndInfoList[focus].wndBody.x;
+        tempMsg.params[1] = mousePos.y - wndInfoList[focus].wndBody.y;
+        dispatchMessage(focus, &tempMsg);
         if (tempR == 3) {
             tempMsg.msg_type = M_CLOSE_WINDOW;
             dispatchMessage(focus, &tempMsg);
