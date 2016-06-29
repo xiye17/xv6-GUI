@@ -185,6 +185,7 @@ int focusOnWindow(int hwnd)
 {
     focus = hwnd;
     if (wndCount >= 1 && hwnd == focusList[0]) {
+        repaintAllWindow(hwnd);
         return 0;
     }
     int i;
@@ -310,7 +311,7 @@ guiKernelHandleMsg(message *msg)
         }
         break;
     case M_MOUSE_DBCLICK:
-       if (mouseDownInContent)
+        if (mouseDownInContent)
         {
             mouseDownInContent = 0;
             tempMsg.msg_type = msg->msg_type;
