@@ -493,3 +493,11 @@ int sys_updatewindow()
     release(&guiKernelLock);
     return 0;
 }
+
+int sys_destroywindow()
+{
+    int hwnd;
+    argint(0, &hwnd);
+
+    return 0;
+}

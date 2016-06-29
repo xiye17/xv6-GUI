@@ -39,6 +39,7 @@ int repaintwindow(int);
 int updatewindow(int, int, int, int, int);
 int getmessage(int,struct message *);
 int settimer(int , int);
+int destroywindow(int);
 
 // ulib.c
 int stat(char*, struct stat*);
@@ -71,3 +72,4 @@ int api_fastrand();
 int api_drawPointAlpha(struct RGB*, struct RGBA);
 int api_drawCharacter(struct Window *, int, int, char, struct RGBA);
 int api_drawString(struct Window *, int, int, char *, struct RGBA);
+int api_destroywindow(struct Window *wnd);

@@ -26,3 +26,4 @@
 #define SYS_getmessage 25
 #define SYS_settimer   26
 #define SYS_updatewindow 27
+#define SYS_destroywindow 28

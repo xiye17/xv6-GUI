@@ -20,6 +20,7 @@ void MsgProc(struct message * msg)
         break;
     case M_CLOSE_WINDOW:
         printf(1, "USER_CLOSE\n");
+        api_destroywindow(&wnd);
         break;
     }
 }

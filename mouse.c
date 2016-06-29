@@ -34,7 +34,7 @@ mouse_wait(uchar type)
         {
             if((inb(0x64) & 2) == 0)
                 return;
-        }   
+        }
     }
 }
 
@@ -61,7 +61,7 @@ mouseinit(void)
 
     mouse_wait(1);
     outb(0x64, 0xa8);		//激活鼠标接口
-    
+
     mouse_wait(1);		//激活中断
     outb(0x64, 0x20);
     mouse_wait(0);
@@ -74,18 +74,18 @@ mouseinit(void)
     mouse_write(0xf6);		//设置鼠标为默认设置
     mouse_read();
 
-    mouse_write(0xa3);		//设置鼠标采样率
+    mouse_write(0xfe);		//设置鼠标采样率
     mouse_read();
     mouse_write(10);
     mouse_read();
- 
+
     mouse_write(0xf4);
-    mouse_read();    
+    mouse_read();
 
     initlock(&mouselock, "mouse");
     picenable(IRQ_MOUSE);
     ioapicenable(IRQ_MOUSE, 0);
-    
+
     count = 0;
     lastclicktick = lastdowntick = -1000;
 }
@@ -110,7 +110,7 @@ genMouseMessage()
 	}*/
 	packet.x_mov = x;
 	packet.y_mov = y;
-	
+
   int btns = packet.l_btn | (packet.r_btn << 1) | (packet.m_btn << 2);
   message msg;
   if (packet.x_mov || packet.y_mov)
@@ -184,7 +184,7 @@ mouseintr(uint tick)
                     count = 0;
                     break;
                 }
-                 
+
         case 2:  packet.x_mov = data;
                  break;
         case 3:  packet.y_mov = data;

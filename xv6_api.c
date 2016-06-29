@@ -172,3 +172,8 @@ int api_drawString(Window *wnd, int x, int y, char *str, RGBA color) {
    return 0;
 }
 
+int api_destroywindow(Window *wnd) {
+    destroywindow(wnd->hwnd);
+
+    return 0;
+}
