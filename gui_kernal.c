@@ -48,11 +48,15 @@ int mouseInWin(int px, int py, int hwnd)
     if(py > body->y && py <(body->y + body->h))
         return 1;
     if(py > bar->y && py < (bar->y + bar->h))
-        return 2;
+    {
+        if(px > body->x && px < body->x + body->w - 30)
+            return 2;
+        else
+            return 3;
+    }
 
     return 0;
 }
-
 void  initMsgQueue(MsgQueue * msgQ)
 {
     msgQ->head = 0;
@@ -68,6 +72,7 @@ int isQueueEmpty(MsgQueue *msgQ)
     else
         return 0;
 }
+
 int isQueueFull(MsgQueue *msgQ)
 {
     if(msgQ->head==(msgQ->tail + 1) % MAX_MSG_COUNT)
@@ -258,19 +263,22 @@ guiKernelHandleMsg(message *msg)
     case M_MOUSE_DOWN:
         tempR = 0;
         for (i = wndCount - 1; i >= 0; i--) {
-
             tempR = mouseInWin(mousePos.x, mousePos.y, focusList[i]);
-            if(tempR == 1) {
-                mouseDownInContent = 1;
-                break;
-            }
-            if(tempR == 2) {
-                mouseDownInBar = 1;
-                break;
-            }
+            if(tempR != 0)
+             break;
+        }
+        if(tempR == 1) {
+            mouseDownInContent = 1;
+        }
+        if(tempR == 2) {
+            mouseDownInBar = 1;
         }
         if (focus != focusList[i]) {
             focusOnWindow(focusList[i]);
+        }
+        if(tempR == 3) {
+            tempMsg.msg_type = M_CLOSE_WINDOW;
+            dispatchMessage(focus, &tempMsg);
         }
         break;
     case M_MOUSE_UP:

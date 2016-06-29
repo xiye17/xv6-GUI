@@ -18,6 +18,9 @@ void MsgProc(struct message * msg)
         break;
     case M_KEY_UP:
         break;
+    case M_CLOSE_WINDOW:
+        printf(1, "USER_CLOSE\n");
+        break;
     }
 }
 int
