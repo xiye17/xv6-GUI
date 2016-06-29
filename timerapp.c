@@ -54,9 +54,10 @@ void drawNumberToContent(int minute, int second)
 
 int flag = 0;
 void MsgProc(struct message * msg)
-
+{
     static int second = 0;
     static int minute = 0;
+    int i;
     switch (msg->msg_type)
     {
         case M_TIMER:
@@ -73,13 +74,13 @@ void MsgProc(struct message * msg)
             api_repaint(&wnd);
             break;
         case M_CLOSE_WINDOW:
-            int i;
             free(separator);
             for (i = 0; i < 10; i++)
             {
                free(numbers[i]);
             }
-            destroywindow(&wnd);
+            api_destroywindow(&wnd);
+            break;
     }
 }
 
