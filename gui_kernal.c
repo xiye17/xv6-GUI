@@ -405,9 +405,20 @@ int sys_repaintwindow()
     }
     int hwnd;
     argint(0, &hwnd);
-
     acquire(&guiKernelLock);
-    repaintAllWindow(hwnd);
+    if (hwnd == focus) {
+        switchuvm(wndInfoList[focus].procPtr);
+        WndInfo* wnd = &wndInfoList[focus];
+        drawRGBContentToContent(screen_buf2, wnd->wholeContent, wnd->wndTitleBar.x, wnd->wndTitleBar.y, wnd->wndBody.w, wnd->wndBody.h + 30);
+        drawRGBContentToContent(screen, wnd->wholeContent, wnd->wndTitleBar.x, wnd->wndTitleBar.y, wnd->wndBody.w, wnd->wndBody.h + 30);
+        if (proc == 0) {
+            switchkvm();
+        } else {
+            switchuvm(proc);
+        }
+    } else {
+        repaintAllWindow(hwnd);
+    }
     release(&guiKernelLock);
    return 0;
 }
