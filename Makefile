@@ -208,7 +208,6 @@ IMGS=desktop.bmp\
      8.bmp\
      9.bmp\
      separator.bmp\
-     TimerAppBackground.bmp\
 
 fs.img: mkfs README $(IMGS) $(UPROGS)
 	./mkfs fs.img README $(IMGS) $(UPROGS)
