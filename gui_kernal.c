@@ -21,6 +21,14 @@ struct spinlock guiKernelLock;
 int mouseDownInContent = 0;
 int mouseDownInBar = 0;
 
+int min(int a, int b) {
+    return (a > b) ? b : a;
+}
+
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
 int testXXX(RGB * p)
 {
     cprintf("%d %d %d", p->R, p->G, p->B);
@@ -149,7 +157,7 @@ int repaintAllWindow(int hwnd)
        // drawWndTitleBar(screen_buf2, i);
         drawRGBContentToContent(screen_buf2, wndInfoList[focusList[i]].wholeContent, wndInfoList[focusList[i]].wndBody.x,
                 wndInfoList[focusList[i]].wndTitleBar.y, wndInfoList[focusList[i]].wndBody.w, wndInfoList[focusList[i]].wndBody.h + 30);
-        if (i == wndCount - 1) {
+        if (i != wndCount - 1) {
            // drawWndTitleBar(screen_buf1, i);
             drawRGBContentToContent(screen_buf1, wndInfoList[focusList[i]].wholeContent, wndInfoList[focusList[i]].wndBody.x,
                     wndInfoList[focusList[i]].wndTitleBar.y, wndInfoList[focusList[i]].wndBody.w, wndInfoList[focusList[i]].wndBody.h + 30);
@@ -216,7 +224,34 @@ guiKernelHandleMsg(message *msg)
         if (mousePos.y > SCREEN_WIDTH) {
             mousePos.y = SCREEN_WIDTH;
         }
-            cprintf("%d", wndCount);
+        if (mouseDownInBar) {
+            cprintf("%d", focus);
+            int dx = mousePos.x - lastMousePos.x;
+            int dy = mousePos.y - lastMousePos.y;
+            WndInfo* wnd = &wndInfoList[focus];
+            int nx = wndInfoList[focus].wndTitleBar.x + dx;
+            int ny = wndInfoList[focus].wndTitleBar.y + dy;
+            drawRGBContentToContentPart(screen_buf2, screen_buf1, wnd->wndTitleBar.x, wnd->wndTitleBar.y,
+                                        wnd->wndTitleBar.x, wnd->wndTitleBar.y, SCREEN_HEIGHT, SCREEN_WIDTH,
+                                        wnd->wndBody.h + 30, wnd->wndBody.w);
+            switchuvm(wndInfoList[focus].procPtr);
+            drawRGBContentToContent(screen_buf2, wnd->wholeContent, nx, ny, wnd->wndBody.w, wnd->wndBody.h + 30);
+            int bx = min(wnd->wndTitleBar.x, nx);
+            int bw = max(wnd->wndBody.w, wnd->wndBody.w + dx);
+            int by = min(wnd->wndTitleBar.y, ny);
+            int bh = max(wnd->wndBody.h, wnd->wndBody.h + dy);
+            drawRGBContentToContentPart(screen, screen_buf2, bx, by, bx, by, SCREEN_HEIGHT, SCREEN_WIDTH, bh, bw);
+            drawRGBContentToContent(screen, screen_buf2, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+            wnd->wndTitleBar.x += dx;
+            wnd->wndTitleBar.y += dy;
+            wnd->wndBody.x += dx;
+            wnd->wndBody.y += dy;
+            if (proc == 0) {
+                switchkvm();
+            } else {
+                switchuvm(proc);
+            }
+        }
         clearMouse(screen, screen_buf2,lastMousePos.x, lastMousePos.y);
         drawMouse(screen, 0, mousePos.x, mousePos.y);
         break;
@@ -240,6 +275,7 @@ guiKernelHandleMsg(message *msg)
         }
         break;
     case M_MOUSE_UP:
+        mouseDownInBar = mouseDownInContent = 0;
         break;
     case M_MOUSE_LEFT_CLICK:
         break;
