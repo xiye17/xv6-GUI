@@ -191,7 +191,6 @@ IMGS=desktop.bmp\
      clock.bmp\
      editor.bmp\
      painter.bmp\
-     DrawerAppBackground.bmp\
      background.bmp\
      bullet1.bmp\
      enemy_big.bmp\
