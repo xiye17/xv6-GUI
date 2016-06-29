@@ -166,10 +166,9 @@ int repaintAllWindow(int hwnd)
        // drawWndTitleBar(screen_buf2, i);
         drawRGBContentToContent(screen_buf2, wndInfoList[focusList[i]].wholeContent, wndInfoList[focusList[i]].wndBody.x,
                 wndInfoList[focusList[i]].wndTitleBar.y, wndInfoList[focusList[i]].wndBody.w, wndInfoList[focusList[i]].wndBody.h + 30);
-        if (i != wndCount - 1) {
-           // drawWndTitleBar(screen_buf1, i);
-            drawRGBContentToContent(screen_buf1, wndInfoList[focusList[i]].wholeContent, wndInfoList[focusList[i]].wndBody.x,
-                    wndInfoList[focusList[i]].wndTitleBar.y, wndInfoList[focusList[i]].wndBody.w, wndInfoList[focusList[i]].wndBody.h + 30);
+        if (i == wndCount - 2) {
+            // drawWndTitleBar(screen_buf1, i);
+            drawScreenToScreen(screen_buf1, screen_buf2);
         }
         if (proc == 0) {
             switchkvm();
