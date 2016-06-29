@@ -65,7 +65,29 @@ int api_paint24BitmapToContent(Window* wnd, struct RGB* img, Point pWnd, Point p
         memmove(t, o, max_line * 3);
     }
     return 0;
+}
 
+int api_paint24BitmapToContentTransparent(Window* wnd, struct RGB* img,
+Point pWnd, Point pBmp, Size sBmp, Size s)
+{
+    int i, j;
+    struct RGB *t;
+    struct RGB *o;
+
+    for (i = 0; i < s.h; ++i) {
+        for(j = 0; j < s.h; ++j)
+        {
+             t = wnd->content + (pWnd.y + i) * wnd->size.w + pWnd.x + j;
+            o = img + (sBmp.h - pBmp.y - 1 - i) * sBmp.w + pBmp.x + j;
+
+            if(o->R==255 && o->G == 255 && o->B==255)
+                continue;
+            t->R = o->R;
+            t->G = o->G;
+            t->B = o->B;
+        }
+    }
+    return 0;
 }
 
 int api_paintContentToContent(Window* wnd, struct RGB* cot, Point pWnd, Point pCot, Size sCot, Size s)

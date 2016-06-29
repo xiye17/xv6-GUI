@@ -63,6 +63,7 @@ int read24BitmapFile(char *, struct RGB *, int *, int *);
 int api_createwindow(struct Window *);
 int api_paint24Bitmap(struct Window *, struct RGB*, struct Point, struct Size);
 int api_paint24BitmapToContent(struct Window*, struct RGB*,struct Point,struct Point,struct Size, struct Size);
+int api_paint24BitmapToContentTransparent(struct Window*, struct RGB*,struct Point,struct Point,struct Size, struct Size);
 int api_paintContentToContent(struct Window*, struct RGB*,struct Point,struct Point,struct Size, struct Size);
 int api_repaint(struct Window *);
 int api_update(struct Window *, struct Rect);
