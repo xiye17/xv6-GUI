@@ -5,7 +5,7 @@
 #include "user.h"
 #include "fcntl.h"
 
-char *argv[] = { "desktop", 0 };
+char *argv[] = { "plane", 0 };
 
 int
 main(void)
@@ -27,7 +27,7 @@ main(void)
       exit();
     }
     if(pid == 0){
-      exec("desktop", argv);
+      exec("plane", argv);
       printf(1, "init: exec desktop failed\n");
       exit();
     }

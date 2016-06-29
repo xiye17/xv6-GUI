@@ -194,7 +194,7 @@ int api_drawRect(Window *wnd, Point p, Size s, RGB color)
     {
         for (j = 0; j < s.w; ++j)
         {
-            o = b + (p.y + i) * wnd->size.h + p.x + j;
+            o = b + (p.y + i) * wnd->size.w + p.x + j;
             *o = color;
         }
     }

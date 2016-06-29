@@ -410,7 +410,6 @@ int repainted = 0;
 int sys_repaintwindow()
 {
     if (repainted == 0) {
-        initDesktop();
         repainted = 1;
     }
     int hwnd;
@@ -498,13 +497,16 @@ int sys_updatewindow()
 
 int sys_destroywindow()
 {
-    int hwnd;
+   /* int hwnd;
     argint(0, &hwnd);
     acquire(&guiKernelLock);
     wndInfoList[hwnd].hwnd = -1;
     timerInfo.countList[hwnd] = -1;
     wndCount -= 1;
+<<<<<<< Updated upstream
     focusOnWindow(focusList[wndCount - 1]);
     release(&guiKernelLock);
+=======
+    release(&guiKernelLock);*/
     return 0;
 }
