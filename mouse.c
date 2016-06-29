@@ -74,7 +74,7 @@ mouseinit(void)
     mouse_write(0xf6);		//设置鼠标为默认设置
     mouse_read();
 
-    mouse_write(0xf3);		//设置鼠标采样率
+    mouse_write(0xa3);		//设置鼠标采样率
     mouse_read();
     mouse_write(10);
     mouse_read();
