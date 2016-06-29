@@ -104,6 +104,8 @@ main(void)
     }
     separator = malloc(55 * 40 * 3);
 
+    api_createwindow(&wnd);
+
     int h, w;
     for (i = 0; i < 10; i++)
     {
@@ -112,7 +114,7 @@ main(void)
 
     read24BitmapFile(separatorFilename, separator, &h, &w);
 
-    api_createwindow(&wnd);
+    
 
     api_paint24BitmapToContent(&wnd, numbers[0], (Point){185,35}, (Point){0,0},
                                (Size){55, 40}, (Size){55, 40});
