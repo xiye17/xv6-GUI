@@ -1,6 +1,6 @@
 #ifndef __ASSEMBLER__
 
-#define MAX_MSG_COUNT 50
+#define MAX_MSG_COUNT 500
 #define MAX_WINDOW_COUNT 10
 
 struct Rect;
