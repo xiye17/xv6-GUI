@@ -179,8 +179,13 @@ UPROGS=\
 	_desktop\
 	_test\
 
-fs.img: mkfs README desktop.bmp $(UPROGS)
-	./mkfs fs.img README desktop.bmp $(UPROGS)
+IMGS = desktop.bmp\
+       clock.bmp\
+       editor.bmp\
+       test.bmp\
+
+fs.img: mkfs README $(IMGS) $(UPROGS)
+	./mkfs fs.img README $(IMGS) $(UPROGS)
 
 -include *.d
 
