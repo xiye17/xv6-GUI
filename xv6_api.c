@@ -182,7 +182,25 @@ int api_drawCharacter(Window *wnd, int x, int y, char ch, RGBA color) {
         }
     }
     return CHARACTER_WIDTH;
+
 }
+
+int api_drawRect(Window *wnd, Point p, Size s, RGB color)
+{
+    int i, j;
+    RGB * b = wnd->content;
+    RGB * o;
+    for(i = 0; i < s.h; ++i)
+    {
+        for (j = 0; j < s.w; ++j)
+        {
+            o = b + (p.y + i) * wnd->size.h + p.x + j;
+            *o = color;
+        }
+    }
+    return 0;
+}
+
 int api_drawString(Window *wnd, int x, int y, char *str, RGBA color) {
     int offset_x = 0;
 
@@ -192,6 +210,17 @@ int api_drawString(Window *wnd, int x, int y, char *str, RGBA color) {
    }
 
    return 0;
+}
+
+int api_drawButton(Window *wnd, Point p, Size s, char * str)
+{
+    RGB bColor;
+    bColor.R = 9;
+    bColor.G = 163;
+    bColor.B = 220;
+    api_drawRect(wnd, p, s, bColor);
+    api_drawString(wnd, p.x + 10, p.y + 10, str, (RGBA){255,255,255,255});
+    return 0;
 }
 
 int api_destroywindow(Window *wnd) {

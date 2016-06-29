@@ -35,6 +35,12 @@ main(int argc, char *argv[])
     wnd.title = "windowtest";
     api_createwindow(&wnd);
     memset(wnd.content, pra * 50, wnd.size.w * wnd.size.h * 3);
+
+    /*struct RGB color;*/
+    /*color.R = 255;*/
+    /*color.G = 0;*/
+    /*color.B = 0;*/
+    api_drawButton(&wnd, (Point){100, 200},(Size) {50, 50},"HAHA" );
     /*RGBA color;*/
     /*color.R =255;*/
     /*color.G =0;*/
