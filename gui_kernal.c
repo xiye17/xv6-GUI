@@ -89,7 +89,7 @@ int addMsgToQueue(MsgQueue *msgQ, message *msg)
 {
     if(msg->msg_type == M_CLOSE_WINDOW)
     {
-         msgQ->msgList[msgQ->head].msg_type = M_CLOSE_WINDOW;
+         msgQ->msgList[msgQ->tail].msg_type = M_CLOSE_WINDOW;
     }
     if(isQueueFull(msgQ))
         return 0;
@@ -135,7 +135,6 @@ int dispatchMessage(int hwnd, message *msg)
 {
     if(addMsgToQueue(&wndInfoList[hwnd].msgQ, msg))
         return 1;
-    cprintf("warnning, queue overflow");
     return 0;
 }
 
@@ -238,7 +237,6 @@ guiKernelHandleMsg(message *msg)
             mousePos.y = SCREEN_WIDTH;
         }
         if (mouseDownInBar) {
-            cprintf("%d", focus);
             int dx = mousePos.x - lastMousePos.x;
             int dy = mousePos.y - lastMousePos.y;
             WndInfo* wnd = &wndInfoList[focus];
