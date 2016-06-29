@@ -145,14 +145,14 @@ int repaintAllWindow(int hwnd)
 {
     int i;
     for (i = 0; i < wndCount; ++i) {
-        switchuvm(wndInfoList[i].procPtr);
+        switchuvm(wndInfoList[focusList[i]].procPtr);
        // drawWndTitleBar(screen_buf2, i);
-        drawRGBContentToContent(screen_buf2, wndInfoList[i].wholeContent, wndInfoList[i].wndBody.x,
-                wndInfoList[i].wndTitleBar.y, wndInfoList[i].wndBody.w, wndInfoList[i].wndBody.h + 30);
-        if (i != wndCount - 1) {
+        drawRGBContentToContent(screen_buf2, wndInfoList[focusList[i]].wholeContent, wndInfoList[focusList[i]].wndBody.x,
+                wndInfoList[focusList[i]].wndTitleBar.y, wndInfoList[focusList[i]].wndBody.w, wndInfoList[focusList[i]].wndBody.h + 30);
+        if (i == wndCount - 1) {
            // drawWndTitleBar(screen_buf1, i);
-            drawRGBContentToContent(screen_buf1, wndInfoList[i].wholeContent, wndInfoList[i].wndBody.x,
-                    wndInfoList[i].wndTitleBar.y, wndInfoList[i].wndBody.w, wndInfoList[i].wndBody.h + 30);
+            drawRGBContentToContent(screen_buf1, wndInfoList[focusList[i]].wholeContent, wndInfoList[focusList[i]].wndBody.x,
+                    wndInfoList[focusList[i]].wndTitleBar.y, wndInfoList[focusList[i]].wndBody.w, wndInfoList[focusList[i]].wndBody.h + 30);
         }
         if (proc == 0) {
             switchkvm();
@@ -235,8 +235,8 @@ guiKernelHandleMsg(message *msg)
                 break;
             }
         }
-        if (focus != i) {
-            focusOnWindow(i);
+        if (i > 0 && focus != focusList[i]) {
+            focusOnWindow(focusList[i]);
         }
         break;
     case M_MOUSE_UP:

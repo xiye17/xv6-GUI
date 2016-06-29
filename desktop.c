@@ -23,12 +23,10 @@ void MsgProc(struct message * msg)
         if(msg->params[0]==97)
         {
             flag = flag + 1;
-            printf(1, "init: starting HAHAH\n");
             pid = fork();
             if(pid == 0){
               argv[1][0] = flag + '0';
               exec("test", argv);
-              printf(1, "init: exec desktop failed\n");
               exit();
             }
         }
@@ -38,7 +36,6 @@ void MsgProc(struct message * msg)
         printf(1, "USER K UP%d %d\n", msg->params[0], msg->params[1]);
         break;
     case M_TIMER:
-        printf(1, "USER TIMER %d\n", msg->params[0]);
         break;
     }
 }
