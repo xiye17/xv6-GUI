@@ -75,7 +75,7 @@ Point pWnd, Point pBmp, Size sBmp, Size s)
     struct RGB *o;
 
     for (i = 0; i < s.h; ++i) {
-        for(j = 0; j < s.h; ++j)
+        for(j = 0; j < s.w; ++j)
         {
              t = wnd->content + (pWnd.y + i) * wnd->size.w + pWnd.x + j;
             o = img + (sBmp.h - pBmp.y - 1 - i) * sBmp.w + pBmp.x + j;

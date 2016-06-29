@@ -501,5 +501,11 @@ int sys_destroywindow()
     int hwnd;
     argint(0, &hwnd);
 
+    acquire(&guiKernelLock);
+    int i;
+    wndInfoList[hwnd] = -1;
+    timerInfo.countList[hwnd] = -1;
+    wndCount -= 1;
+    release(&guiKernelLock);
     return 0;
 }
