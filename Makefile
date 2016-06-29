@@ -180,9 +180,11 @@ UPROGS=\
 	_test\
 
 IMGS = desktop.bmp\
+	   test.bmp\
+	   plane.bmp\
        clock.bmp\
        editor.bmp\
-       test.bmp\
+       painter.bmp\
 
 fs.img: mkfs README $(IMGS) $(UPROGS)
 	./mkfs fs.img README $(IMGS) $(UPROGS)
