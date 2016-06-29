@@ -185,7 +185,16 @@ void MsgProc(struct message *msg)
                 api_paint24BitmapToContentTransparent(&wnd,bullet1,(Point){bullets[i].x,bullets[i].y},(Point){0,0},(Size){22,15},(Size){22,15});
             }
             api_repaint(&wnd);
-           
+            break;
+        case M_CLOSE_WINDOW:
+            free(background);
+            free(plane);
+            free(bigEnemy);
+            free(middleEnemy);
+            free(smallEnemy);
+            free(bullet1);
+            api_destroywindow(&wnd);
+            break;
     }
     
 }

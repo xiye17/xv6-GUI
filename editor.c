@@ -246,6 +246,10 @@ void MsgProc(struct message * msg)
                     }
             }
             break;
+        case M_CLOSE_WINDOW:
+            free(background);
+            api_destroywindow(&wnd);
+            break;
     }
 }
 int 
