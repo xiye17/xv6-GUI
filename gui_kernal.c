@@ -175,10 +175,10 @@ int repaintAllWindow(int hwnd)
 
 int focusOnWindow(int hwnd)
 {
+    focus = hwnd;
     if (wndCount >= 1 && hwnd == focusList[0]) {
         return 0;
     }
-    focus = hwnd;
     int i;
     for (i = 0; i < wndCount; ++i)
     {
@@ -269,7 +269,7 @@ guiKernelHandleMsg(message *msg)
                 break;
             }
         }
-        if (i > 0 && focus != focusList[i]) {
+        if (focus != focusList[i]) {
             focusOnWindow(focusList[i]);
         }
         break;
