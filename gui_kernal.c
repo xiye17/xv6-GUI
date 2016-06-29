@@ -256,17 +256,16 @@ guiKernelHandleMsg(message *msg)
         drawMouse(screen, 0, mousePos.x, mousePos.y);
         break;
     case M_MOUSE_DOWN:
+        tempR = 0;
         for (i = wndCount - 1; i >= 0; i--) {
 
             tempR = mouseInWin(mousePos.x, mousePos.y, focusList[i]);
             if(tempR == 1) {
                 mouseDownInContent = 1;
-                cprintf("Mouse Content in %d\n", focusList[i]);
                 break;
             }
             if(tempR == 2) {
                 mouseDownInBar = 1;
-                cprintf("Mouse Bar in %d\n", focusList[i]);
                 break;
             }
         }
@@ -278,17 +277,45 @@ guiKernelHandleMsg(message *msg)
         mouseDownInBar = mouseDownInContent = 0;
         break;
     case M_MOUSE_LEFT_CLICK:
+        if (mouseDownInContent)
+        {
+            mouseDownInContent = 0;
+            tempMsg.msg_type = msg->msg_type;
+            tempMsg.params[0] = mousePos.x - wndInfoList[focus].wndBody.x;
+            tempMsg.params[1] = mousePos.y - wndInfoList[focus].wndBody.y;
+            tempMsg.params[2] = 0; //define 0 left click
+
+            dispatchMessage(focus, &tempMsg);
+        }
         break;
     case M_MOUSE_RIGHT_CLICK:
+        if (mouseDownInContent)
+        {
+            mouseDownInContent = 0;
+            tempMsg.msg_type = msg->msg_type;
+            tempMsg.params[0] = mousePos.x - wndInfoList[focus].wndBody.x;
+            tempMsg.params[1] = mousePos.y - wndInfoList[focus].wndBody.y;
+            tempMsg.params[2] = 1; //define 1 left click
+            dispatchMessage(focus, &tempMsg);
+        }
         break;
     case M_MOUSE_DBCLICK:
+       if (mouseDownInContent)
+        {
+            mouseDownInContent = 0;
+            tempMsg.msg_type = msg->msg_type;
+            tempMsg.params[0] = mousePos.x - wndInfoList[focus].wndBody.x;
+            tempMsg.params[1] = mousePos.y - wndInfoList[focus].wndBody.y;
+            tempMsg.params[2] = 2; //define 2 double click
+            dispatchMessage(focus, &tempMsg);
+        }
         break;
     case M_KEY_DOWN:
         //cprintf("M_KEY_DOWN");
         tempMsg.msg_type = msg->msg_type;
         tempMsg.params[0] = msg->params[0];
         tempMsg.params[1] = msg->params[1];
-        dispatchMessage(0, &tempMsg);
+        dispatchMessage(focus, &tempMsg);
         break;
     case M_KEY_UP:
         //cprintf("M_KEY_UP");
