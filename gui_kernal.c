@@ -267,7 +267,7 @@ guiKernelHandleMsg(message *msg)
         for (i = wndCount - 1; i >= 0; i--) {
             tempR = mouseInWin(mousePos.x, mousePos.y, focusList[i]);
             if(tempR != 0)
-             break;
+                break;
         }
         if(tempR == 1) {
             mouseDownInContent = 1;
@@ -278,7 +278,7 @@ guiKernelHandleMsg(message *msg)
         if (focus != focusList[i]) {
             focusOnWindow(focusList[i]);
         }
-        if(tempR == 3) {
+        if (tempR == 3) {
             tempMsg.msg_type = M_CLOSE_WINDOW;
             dispatchMessage(focus, &tempMsg);
         }
@@ -500,12 +500,11 @@ int sys_destroywindow()
 {
     int hwnd;
     argint(0, &hwnd);
-
     acquire(&guiKernelLock);
-    int i;
-    wndInfoList[hwnd] = -1;
+    wndInfoList[hwnd].hwnd = -1;
     timerInfo.countList[hwnd] = -1;
     wndCount -= 1;
+    focusOnWindow(focusList[wndCount - 1]);
     release(&guiKernelLock);
     return 0;
 }
