@@ -29,6 +29,10 @@ int max(int a, int b) {
     return (a > b) ? a : b;
 }
 
+int abs(int a) {
+    return (a >= 0)? a: -a;
+}
+
 int testXXX(RGB * p)
 {
     cprintf("%d %d %d", p->R, p->G, p->B);
@@ -242,11 +246,10 @@ guiKernelHandleMsg(message *msg)
             switchuvm(wndInfoList[focus].procPtr);
             drawRGBContentToContent(screen_buf2, wnd->wholeContent, nx, ny, wnd->wndBody.w, wnd->wndBody.h + 30);
             int bx = min(wnd->wndTitleBar.x, nx);
-            int bw = max(wnd->wndBody.w, wnd->wndBody.w + dx);
+            int bw = wnd->wndBody.w + abs(dx);
             int by = min(wnd->wndTitleBar.y, ny);
-            int bh = max(wnd->wndBody.h, wnd->wndBody.h + dy);
+            int bh = wnd->wndBody.h + abs(dy) + 30;
             drawRGBContentToContentPart(screen, screen_buf2, bx, by, bx, by, SCREEN_HEIGHT, SCREEN_WIDTH, bh, bw);
-            drawRGBContentToContent(screen, screen_buf2, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
             wnd->wndTitleBar.x += dx;
             wnd->wndTitleBar.y += dy;
             wnd->wndBody.x += dx;
