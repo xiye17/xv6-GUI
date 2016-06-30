@@ -488,6 +488,7 @@ int updateWindow(int hwnd, int x, int y, int w, int h)
     /*void drawRGBContentToContentPart(RGB *buf, RGB *img, int x, int y,*/
     /*int bx, int by, int bh, int bw, int h, int w)*/
 
+    drawRGBContentToContentPart(screen_buf2, wnd->content, x, y, bx, by, bh, bw, h, w);
     drawRGBContentToContentPart(screen, wnd->content, x, y, bx, by, bh, bw, h, w);
 
     return 0;
