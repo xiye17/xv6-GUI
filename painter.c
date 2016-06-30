@@ -26,7 +26,7 @@ int isMouseInButton(int x, int y) {
 
 int isMouseInContent(int x, int y) {
    if (10 < x && x < 490 && 40 < y && y < 290){
-        return 1;
+       return 1;
    }
    else {
         return 0;
@@ -38,7 +38,7 @@ void MsgProc(struct message *msg) {
     static int isPencil = 1;
     switch (msg->msg_type) {
         case M_MOUSE_DOWN:
-            if (isMouseInButton(msg->params[0], msg->params[1]) && !isMouseInButton(msg->params[0], msg->params[1])) {
+            if (isMouseInContent(msg->params[0], msg->params[1]) && !isMouseInButton(msg->params[0], msg->params[1])) {
                 mouseDown = 1;
                 if (isPencil) {
                     api_drawRect(&wnd, (Point) {msg->params[0] - pointSize / 2, msg->params[1] - pointSize / 2},
@@ -52,7 +52,7 @@ void MsgProc(struct message *msg) {
             }
             break;
         case M_MOUSE_MOVE:
-            if (isMouseInButton(msg->params[0], msg->params[1]) && !isMouseInButton(msg->params[0], msg->params[1]) && mouseDown) {
+            if (isMouseInContent(msg->params[0], msg->params[1]) && !isMouseInButton(msg->params[0], msg->params[1]) && mouseDown) {
                 if (isPencil) {
                     api_drawRect(&wnd, (Point) {msg->params[0] - pointSize / 2, msg->params[1] - pointSize / 2},
                                  (Size) {pointSize, pointSize}, (RGB) {0, 0, 0});
