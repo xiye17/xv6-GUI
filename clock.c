@@ -92,9 +92,9 @@ main(void)
     wnd.size.w = 250;
     wnd.size.h = 100;
     wnd.title = "TimerApp";
-
     char* numberFilename[10] = {"0.bmp", "1.bmp", "2.bmp", "3.bmp", "4.bmp", "5.bmp", "6.bmp", "7.bmp", "8.bmp", "9.bmp"};
     char  separatorFilename[] = "separator.bmp";
+    api_createwindow(&wnd);
 
     int i;
 
@@ -103,8 +103,6 @@ main(void)
         numbers[i] = malloc(55 * 40 * 3);
     }
     separator = malloc(55 * 40 * 3);
-
-    api_createwindow(&wnd);
 
     int h, w;
     for (i = 0; i < 10; i++)

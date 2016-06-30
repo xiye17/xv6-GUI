@@ -181,7 +181,7 @@ UPROGS=\
     _painter\
     _plane\
     _editor\
-    _timerapp\
+    _clock\
 
 IMGS=desktop.bmp\
      clock.bmp\
