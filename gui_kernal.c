@@ -91,12 +91,13 @@ int addMsgToQueue(MsgQueue *msgQ, message *msg)
     {
          msgQ->msgList[msgQ->tail].msg_type = M_CLOSE_WINDOW;
     }
-    if(isQueueFull(msgQ))
-        return 0;
+//    if(isQueueFull(msgQ))
+//        return 0;
     msgQ->msgList[msgQ->tail].msg_type = msg->msg_type;
     memmove(msgQ->msgList[msgQ->tail].params, msg->params, 10 * sizeof(int));
     msgQ->tail = (msgQ->tail + 1) % MAX_MSG_COUNT;
-    msgQ->length++;
+    if (!isQueueFull(msgQ))
+        msgQ->length++;
     return 1;
 }
 

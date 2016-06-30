@@ -9,6 +9,7 @@ Window wnd;
 #define PLANE_WIDTH 45
 #define BACKGROUNDWIDTH 480
 #define BACKGROUNDHEIGHT 500
+#define HEROSPEED 15
 int plane_x;
 int plane_y;
 Point enemy[6]={{0,0},{50,0},{100,20},{150,40},{200,20},{250,40}};
@@ -39,7 +40,7 @@ void MsgProc(struct message *msg)
         case M_KEY_DOWN:
             if (msg->params[0]==226)
             {
-                plane_y-=5;
+                plane_y-=HEROSPEED;
                 if (plane_y < 0)
                 {
                     plane_y = 0;
@@ -47,7 +48,7 @@ void MsgProc(struct message *msg)
             }
             else if (msg->params[0]==227)
             {
-                plane_y+=5;
+                plane_y+=HEROSPEED;
                 if (plane_y > 500-PLANE_HEIGHT)
                 {
                     plane_y=500 - PLANE_HEIGHT;
@@ -55,7 +56,7 @@ void MsgProc(struct message *msg)
             }
             else if (msg->params[0]==228)
             {
-                plane_x-=5;
+                plane_x-=HEROSPEED;
                 if (plane_x <0)
                 {
                     plane_x=0;
@@ -63,7 +64,7 @@ void MsgProc(struct message *msg)
             }
             else if (msg->params[0]==229)
             {
-                plane_x+=5;
+                plane_x+=HEROSPEED;
                 if (plane_x > 300-PLANE_WIDTH)
                 {
                     plane_x = 300-PLANE_WIDTH;
