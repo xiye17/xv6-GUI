@@ -48,7 +48,7 @@ void MsgProc(struct message *msg) {
                     api_drawRect(&wnd, (Point) {msg->params[0] - pointSize / 2, msg->params[1] - pointSize / 2},
                                  (Size) {pointSize, pointSize}, (RGB) {255, 255, 255});
                 }
-                api_repaint(&wnd);
+                api_update(&wnd, (Rect){msg->params[0] - pointSize / 2, msg->params[1] - pointSize /2, pointSize, pointSize});
             }
             break;
         case M_MOUSE_MOVE:
@@ -61,7 +61,7 @@ void MsgProc(struct message *msg) {
                     api_drawRect(&wnd, (Point) {msg->params[0] - pointSize / 2, msg->params[1] - pointSize / 2},
                                  (Size) {pointSize, pointSize}, (RGB) {255, 255, 255});
                 }
-                api_repaint(&wnd);
+                api_update(&wnd, (Rect){msg->params[0] - pointSize / 2, msg->params[1] - pointSize /2, pointSize, pointSize});
             }
             break;
         case M_MOUSE_UP:
